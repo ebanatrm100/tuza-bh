@@ -75,6 +75,16 @@ class TuzaDB extends Dexie {
       await tx.table('bibleVerses').clear();
       await tx.table('hymns').clear();
     });
+    this.version(3).stores({
+      bibleBooks: 'id, name, englishName, testament',
+      bibleVerses: '++id, lang, bookId, chapter, [lang+bookId+chapter]',
+      hymns: '++id, lang, number, [lang+number]',
+      meta: 'key'
+    }).upgrade(async (tx) => {
+      await tx.table('bibleVerses').clear();
+      await tx.table('hymns').clear();
+      await tx.table('meta').clear();
+    });
   }
 }
 

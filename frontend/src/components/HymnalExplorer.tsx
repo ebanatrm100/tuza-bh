@@ -33,7 +33,7 @@ export default function HymnalExplorer({ lang }: { lang: Lang }) {
       .then((rows) => setHymns(rows));
   }, [lang]);
 
-  const compareKey = selected ? `${compareLang}:${selected.number}` : '';
+  const compareKey = selected ? `${compareLang}:${selected.collection}:${selected.number}` : '';
 
   useEffect(() => {
     if (!compareOn || !selected) return;
@@ -41,9 +41,10 @@ export default function HymnalExplorer({ lang }: { lang: Lang }) {
     db.hymns
       .where('[lang+number]')
       .equals([compareLang, selected.number])
+      .filter((row) => belongsTo(row, selected.collection))
       .first()
       .then((row) => {
-        if (alive) setCompareData({ key: `${compareLang}:${selected.number}`, hymn: row ?? null });
+        if (alive) setCompareData({ key: `${compareLang}:${selected.collection}:${selected.number}`, hymn: row ?? null });
       });
     return () => {
       alive = false;
