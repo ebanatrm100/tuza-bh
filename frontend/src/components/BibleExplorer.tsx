@@ -1,0 +1,527 @@
+import { useEffect, useMemo, useState } from 'react';
+import { db, seedOfflineData, type BibleBook, type BibleVerse } from '../db';
+import { BOOKS, bookName } from '../data/books';
+import { LANGS, LANG_LABELS, t, type Lang } from '../i18n';
+import { usePersistentState } from '../lib/usePersistentState';
+import type { ShareCardOptions } from '../lib/shareCard';
+import BackButton from './BackButton';
+import Modal from './Modal';
+import ShareCardModal from './ShareCardModal';
+import TabCard from './TabCard';
+import TextSizeControl from './TextSizeControl';
+import { BibleIcon, CompareIcon, CrossIcon, ScrollIcon, SearchIcon, ShareIcon, StarIcon } from './icons';
+
+type Testament = 'old' | 'new';
+
+interface Bookmark {
+  bookId: number;
+  chapter: number;
+  verse: number;
+  text: string;
+}
+
+const BOOKMARKS_KEY = 'tuza-bookmarks-v1';
+const FONT_KEY = 'tuza-bible-font';
+
+const OLD_COUNT = BOOKS.filter((b) => b.testament === 'old').length;
+const NEW_COUNT = BOOKS.filter((b) => b.testament === 'new').length;
+
+export default function BibleExplorer({ lang }: { lang: Lang }) {
+  const s = t(lang);
+
+  const [books, setBooks] = useState<BibleBook[]>([]);
+  const [testament, setTestament] = useState<Testament | null>(null);
+  const [book, setBook] = useState<BibleBook | null>(null);
+  const [chapter, setChapter] = useState<number | null>(null);
+  const [chapterVerses, setChapterVerses] = useState<BibleVerse[]>([]);
+  const [query, setQuery] = useState('');
+  const [verseHits, setVerseHits] = useState<BibleVerse[]>([]);
+  const [bookmarksOpen, setBookmarksOpen] = useState(false);
+  const [bookmarks, setBookmarks] = usePersistentState<Bookmark[]>(BOOKMARKS_KEY, []);
+  const [fontScale, setFontScale] = usePersistentState<number>(FONT_KEY, 1);
+  const [shareCard, setShareCard] = useState<ShareCardOptions | null>(null);
+  const [compareOn, setCompareOn] = useState(false);
+  const [compareLang, setCompareLang] = useState<Lang>(lang === 'en' ? 'rw' : 'en');
+  const [compareData, setCompareData] = useState<{ key: string; rows: BibleVerse[] }>({ key: '', rows: [] });
+
+  useEffect(() => {
+    seedOfflineData()
+      .then(() => db.bibleBooks.orderBy('id').toArray())
+      .then((rows) => setBooks(rows.length ? rows : []));
+  }, []);
+
+  useEffect(() => {
+    if (!book || chapter === null) {
+      setChapterVerses([]);
+      return;
+    }
+    let alive = true;
+    db.bibleVerses
+      .where('[lang+bookId+chapter]')
+      .equals([lang, book.id, chapter])
+      .sortBy('verse')
+      .then((rows) => {
+        if (alive) setChapterVerses(rows);
+      });
+    return () => {
+      alive = false;
+    };
+  }, [book, chapter, lang]);
+
+  const compareKey = book && chapter !== null ? `${compareLang}:${book.id}:${chapter}` : '';
+
+  useEffect(() => {
+    if (!compareOn || !book || chapter === null) return;
+    let alive = true;
+    db.bibleVerses
+      .where('[lang+bookId+chapter]')
+      .equals([compareLang, book.id, chapter])
+      .sortBy('verse')
+      .then((rows) => {
+        if (alive) setCompareData({ key: `${compareLang}:${book.id}:${chapter}`, rows });
+      });
+    return () => {
+      alive = false;
+    };
+  }, [compareOn, compareLang, book, chapter]);
+
+  // Only use rows that belong to the chapter currently open.
+  const compareByVerse = useMemo(() => {
+    const map = new Map<number, string>();
+    if (compareData.key !== compareKey) return map;
+    for (const row of compareData.rows) map.set(row.verse, row.text);
+    return map;
+  }, [compareData, compareKey]);
+
+  const normalized = query.trim().toLowerCase();
+
+  useEffect(() => {
+    if (normalized.length < 2) {
+      setVerseHits([]);
+      return;
+    }
+    let alive = true;
+    db.bibleVerses
+      .where('lang')
+      .equals(lang)
+      .filter((verse) => verse.text.toLowerCase().includes(normalized))
+      .limit(24)
+      .toArray()
+      .then((rows) => {
+        if (alive) setVerseHits(rows);
+      });
+    return () => {
+      alive = false;
+    };
+  }, [normalized, lang]);
+
+  const bookMatches = useMemo(
+    () => (normalized ? books.filter((b) => bookName(b.id, lang).toLowerCase().includes(normalized)) : []),
+    [books, normalized, lang]
+  );
+
+  const selectTestament = (next: Testament) => {
+    setQuery('');
+    if (testament === next) {
+      setTestament(null);
+      setBook(null);
+      setChapter(null);
+      return;
+    }
+    setTestament(next);
+    setBook(null);
+    setChapter(null);
+  };
+
+  const openBook = (next: BibleBook) => {
+    setQuery('');
+    setTestament(next.testament);
+    setBook(next);
+    setChapter(null);
+  };
+
+  const openReference = (bookId: number, targetChapter: number) => {
+    const target = books.find((b) => b.id === bookId);
+    if (!target) return;
+    setBookmarksOpen(false);
+    setQuery('');
+    setTestament(target.testament);
+    setBook(target);
+    setChapter(targetChapter);
+  };
+
+  const isBookmarked = (verse: number) =>
+    bookmarks.some((b) => b.bookId === book?.id && b.chapter === chapter && b.verse === verse);
+
+  const toggleBookmark = (verse: BibleVerse) => {
+    if (!book || chapter === null) return;
+    const existing = bookmarks.find(
+      (b) => b.bookId === book.id && b.chapter === chapter && b.verse === verse.verse
+    );
+    setBookmarks(
+      existing
+        ? bookmarks.filter((b) => b !== existing)
+        : [...bookmarks, { bookId: book.id, chapter, verse: verse.verse, text: verse.text }]
+    );
+  };
+
+  const removeBookmark = (target: Bookmark) => {
+    setBookmarks(bookmarks.filter((b) => b !== target));
+  };
+
+  const savedVerses = chapter
+    ? chapterVerses.filter((v) => isBookmarked(v.verse)).length
+    : 0;
+
+  let body;
+
+  if (normalized) {
+    body = (
+      <div className="space-y-3">
+        {bookMatches.length > 0 && (
+          <div>
+            <p className="mb-1.5 text-[10px] font-bold tracking-[0.18em] text-[#FACC15]/80 uppercase">{s.books}</p>
+            <div className="grid grid-cols-2 gap-1.5">
+              {bookMatches.map((b) => (
+                <button
+                  key={b.id}
+                  type="button"
+                  onClick={() => openBook(b)}
+                  className="rounded-lg border border-white/10 bg-white/5 px-2.5 py-2 text-left text-[11px] font-semibold text-white transition hover:border-[#FACC15]/60 hover:bg-white/10"
+                >
+                  {bookName(b.id, lang)}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+        {verseHits.length > 0 && (
+          <div>
+            <p className="mb-1.5 text-[10px] font-bold tracking-[0.18em] text-[#FACC15]/80 uppercase">{s.verses}</p>
+            <ul className="space-y-1.5">
+              {verseHits.map((verse) => (
+                <li key={`${verse.bookId}-${verse.chapter}-${verse.verse}`}>
+                  <button
+                    type="button"
+                    onClick={() => openReference(verse.bookId, verse.chapter)}
+                    className="w-full rounded-lg border border-white/10 bg-white/5 px-2.5 py-2 text-left transition hover:border-[#FACC15]/50 hover:bg-white/10"
+                  >
+                    <span className="block text-[10px] font-bold text-[#FACC15]">
+                      {bookName(verse.bookId, lang)} {verse.chapter}:{verse.verse}
+                    </span>
+                    <span className="mt-0.5 line-clamp-2 block text-[11px] leading-snug text-violet-50">
+                      {verse.text}
+                    </span>
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+        {bookMatches.length === 0 && verseHits.length === 0 && (
+          <p className="py-6 text-center text-xs text-violet-100/60">{s.noResults}</p>
+        )}
+      </div>
+    );
+  } else if (book && chapter !== null) {
+    body = (
+      <div>
+        <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
+          <BackButton label={s.backToChapters} onClick={() => setChapter(null)} />
+          <div className="flex items-center gap-1.5">
+            <button
+              type="button"
+              onClick={() => setCompareOn((v) => !v)}
+              aria-pressed={compareOn}
+              title={s.compareLanguage}
+              className={`flex items-center gap-1.5 rounded-xl border px-2 py-1 text-[10px] font-bold tracking-wide uppercase transition ${
+                compareOn
+                  ? 'border-[#FACC15]/70 bg-[#FACC15]/15 text-[#FACC15]'
+                  : 'border-white/15 bg-white/5 text-violet-100/70 hover:border-[#FACC15]/50 hover:text-white'
+              }`}
+            >
+              <CompareIcon size={12} />
+              {s.compareLanguage}
+            </button>
+            <TextSizeControl
+              label={s.textSize}
+              increaseLabel={s.increaseText}
+              decreaseLabel={s.decreaseText}
+              scale={fontScale}
+              onChange={setFontScale}
+            />
+          </div>
+        </div>
+        {compareOn && (
+          <div className="mb-2 flex items-center gap-2 rounded-xl border border-[#FACC15]/30 bg-[#FACC15]/10 px-2.5 py-1.5">
+            <span className="text-[9px] font-bold tracking-[0.16em] text-[#FACC15]/80 uppercase">{s.compareWith}</span>
+            <select
+              value={compareLang}
+              onChange={(e) => setCompareLang(e.target.value as Lang)}
+              aria-label={s.compareWith}
+              className="flex-1 rounded-lg border border-white/15 bg-white/10 px-2 py-1 text-[11px] font-semibold text-white outline-none focus:border-[#FACC15]/70"
+            >
+              {LANGS.filter((l) => l !== lang).map((l) => (
+                <option key={l} value={l} className="bg-[#2B0F5C] text-white">
+                  {LANG_LABELS[l]}
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
+        <h3 className="mb-2 text-sm font-bold text-white">
+          {bookName(book.id, lang)} <span className="text-violet-100/60">· {s.chapter} {chapter}</span>
+          {savedVerses > 0 && <span className="ml-2 text-[10px] font-semibold text-[#FACC15]">★ {savedVerses}</span>}
+        </h3>
+        {chapterVerses.length === 0 ? (
+          <p className="rounded-xl border border-dashed border-white/15 px-3 py-6 text-center text-xs text-violet-100/60">
+            {s.noVerses}
+          </p>
+        ) : (
+          <div className={compareOn ? 'space-y-2' : 'space-y-1'}>
+            {chapterVerses.map((verse) => {
+              const saved = isBookmarked(verse.verse);
+              const parallel = compareOn ? compareByVerse.get(verse.verse) : undefined;
+              return (
+                <div
+                  key={`${verse.chapter}-${verse.verse}`}
+                  className={
+                    compareOn
+                      ? 'rounded-xl border border-white/10 bg-white/[0.04] px-2.5 py-2'
+                      : 'group flex items-start gap-1.5 rounded-xl px-2 py-1.5 transition hover:bg-white/5'
+                  }
+                >
+                  <div className={compareOn ? 'grid gap-2 sm:grid-cols-2' : 'contents'}>
+                    <div className="flex items-start gap-1.5">
+                      <p
+                        className="flex-1 text-violet-50"
+                        style={{ fontSize: `${0.95 * fontScale}rem`, lineHeight: 1.75 }}
+                      >
+                        <sup className="mr-1.5 text-[0.65em] font-bold text-[#FACC15]">{verse.verse}</sup>
+                        {verse.text}
+                      </p>
+                      <div className="mt-0.5 flex shrink-0 items-center gap-0.5">
+                        <button
+                          type="button"
+                          onClick={() =>
+                            book &&
+                            setShareCard({
+                              reference: `${bookName(book.id, lang)} ${chapter}:${verse.verse}`,
+                              text: verse.text
+                            })
+                          }
+                          aria-label={s.shareCard}
+                          title={s.shareCard}
+                          className="flex h-6 w-6 items-center justify-center rounded-full text-violet-100/25 transition hover:text-[#FACC15]"
+                        >
+                          <ShareIcon size={12} />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => toggleBookmark(verse)}
+                          aria-label={saved ? s.removeBookmark : s.bookmarkVerse}
+                          title={saved ? s.removeBookmark : s.bookmarkVerse}
+                          aria-pressed={saved}
+                          className={`flex h-6 w-6 items-center justify-center rounded-full transition ${
+                            saved ? 'text-[#FACC15]' : 'text-violet-100/25 hover:text-[#FACC15]'
+                          }`}
+                        >
+                          <StarIcon size={13} filled={saved} />
+                        </button>
+                      </div>
+                    </div>
+                    {compareOn && (
+                      <p
+                        className="whitespace-pre-line border-t border-white/10 pt-1.5 text-violet-100/85 sm:border-t-0 sm:border-l sm:pt-0 sm:pl-2.5"
+                        style={{ fontSize: `${0.9 * fontScale}rem`, lineHeight: 1.7 }}
+                      >
+                        <span className="mr-1.5 text-[0.65em] font-bold tracking-wide text-[#FACC15]/70 uppercase">
+                          {LANG_LABELS[compareLang]}
+                        </span>
+                        {parallel ?? '—'}
+                      </p>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </div>
+    );
+  } else if (book) {
+    body = (
+      <div>
+        <div className="mb-2 flex items-center justify-between gap-2">
+          <BackButton label={s.backToBooks} onClick={() => setBook(null)} />
+          <span className="text-[9px] font-bold tracking-wide text-[#FACC15]/80 uppercase">
+            {book.testament === 'old' ? s.oldTestament : s.newTestament}
+          </span>
+        </div>
+        <h3 className="mb-0.5 text-sm font-bold text-white">{bookName(book.id, lang)}</h3>
+        <p className="mb-2.5 text-[10px] text-violet-100/60">
+          {book.chapters} {s.chapters}
+        </p>
+        <div className="grid grid-cols-6 gap-1.5 sm:grid-cols-8">
+          {Array.from({ length: book.chapters }, (_, i) => i + 1).map((ch) => (
+            <button
+              key={ch}
+              type="button"
+              onClick={() => setChapter(ch)}
+              className="aspect-square rounded-lg border border-white/15 bg-white/5 text-xs font-semibold text-white transition hover:border-[#FACC15]/70 hover:bg-[#FACC15]/20"
+            >
+              {ch}
+            </button>
+          ))}
+        </div>
+      </div>
+    );
+  } else if (testament) {
+    const list = books.filter((b) => b.testament === testament);
+    body = (
+      <div>
+        <div className="mb-2 flex items-center justify-between gap-2">
+          <p className="text-[10px] font-bold tracking-[0.18em] text-[#FACC15]/80 uppercase">
+            {testament === 'old' ? s.oldTestament : s.newTestament}
+          </p>
+          <span className="text-[10px] text-violet-100/55">
+            {list.length} {s.books}
+          </span>
+        </div>
+        <div className="grid grid-cols-2 gap-1.5 sm:grid-cols-3">
+          {list.map((b) => (
+            <button
+              key={b.id}
+              type="button"
+              onClick={() => openBook(b)}
+              className="rounded-lg border border-white/10 bg-white/5 px-2.5 py-2 text-left transition hover:border-[#F43F5E]/60 hover:bg-white/10"
+            >
+              <span className="block truncate text-[11px] font-semibold text-white">{bookName(b.id, lang)}</span>
+              <span className="block text-[9px] text-violet-100/55">
+                {b.chapters} {s.chapters}
+              </span>
+            </button>
+          ))}
+        </div>
+      </div>
+    );
+  } else {
+    body = (
+      <p className="rounded-xl border border-dashed border-white/15 px-3 py-6 text-center text-xs text-violet-100/60">
+        {s.chooseTestament}
+      </p>
+    );
+  }
+
+  return (
+    <section
+      aria-labelledby="bible-panel-title"
+      className="flex flex-col rounded-3xl border border-white/15 bg-white/[0.07] p-3 shadow-xl backdrop-blur-md sm:p-4"
+    >
+      <header className="mb-3 flex items-center justify-between gap-2">
+        <h2 id="bible-panel-title" className="flex min-w-0 items-center gap-2">
+          <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-[#FACC15] to-[#F59E0B] text-[#3B1277] shadow-md">
+            <BibleIcon size={17} />
+          </span>
+          <span className="truncate text-base font-black tracking-wide text-white uppercase sm:text-lg">{s.bible}</span>
+        </h2>
+        <span className="shrink-0 rounded-full border border-white/15 bg-white/5 px-2.5 py-1 text-[10px] font-semibold text-violet-100/70">
+          {BOOKS.length} {s.books}
+        </span>
+      </header>
+
+      <div className="mb-3 flex items-center gap-2">
+        <div className="flex flex-1 items-center gap-2 rounded-xl border border-white/15 bg-white/10 px-2.5 py-2 focus-within:border-[#FACC15]/70">
+          <SearchIcon />
+          <input
+            type="search"
+            value={query}
+            onChange={(event) => setQuery(event.target.value)}
+            placeholder={s.searchBible}
+            aria-label={s.searchBible}
+            className="w-full min-w-0 bg-transparent text-xs text-white outline-none placeholder:text-violet-100/45"
+          />
+        </div>
+        <button
+          type="button"
+          onClick={() => setBookmarksOpen(true)}
+          aria-label={s.bookmarks}
+          title={s.bookmarks}
+          className="relative flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-white/15 bg-white/10 text-[#FACC15] transition hover:border-[#FACC15]/60 hover:bg-white/15"
+        >
+          <StarIcon size={15} filled={bookmarks.length > 0} />
+          {bookmarks.length > 0 && (
+            <span className="absolute -top-1 -right-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-[#F43F5E] px-1 text-[9px] font-bold text-white">
+              {bookmarks.length}
+            </span>
+          )}
+        </button>
+      </div>
+
+      <div className="mb-3 grid grid-cols-2 gap-2">
+        <TabCard
+          title={s.oldTestament}
+          meta={`${OLD_COUNT} ${s.books}`}
+          icon={<ScrollIcon size={16} />}
+          active={testament === 'old'}
+          accent="gold"
+          onClick={() => selectTestament('old')}
+        />
+        <TabCard
+          title={s.newTestament}
+          meta={`${NEW_COUNT} ${s.books}`}
+          icon={<CrossIcon size={16} />}
+          active={testament === 'new'}
+          accent="coral"
+          onClick={() => selectTestament('new')}
+        />
+      </div>
+
+      <div className="min-h-[7rem] flex-1">{body}</div>
+
+      <ShareCardModal
+        open={shareCard !== null}
+        onClose={() => setShareCard(null)}
+        lang={lang}
+        card={shareCard}
+      />
+
+      <Modal open={bookmarksOpen} title={s.bookmarks} closeLabel={s.close} onClose={() => setBookmarksOpen(false)}>
+        {bookmarks.length === 0 ? (
+          <p className="py-6 text-center text-xs text-violet-100/60">{s.noBookmarks}</p>
+        ) : (
+          <ul className="space-y-1.5">
+            {bookmarks.map((mark) => (
+              <li
+                key={`${mark.bookId}-${mark.chapter}-${mark.verse}`}
+                className="flex items-start gap-2 rounded-xl border border-white/10 bg-white/5 p-2.5"
+              >
+                <button
+                  type="button"
+                  onClick={() => openReference(mark.bookId, mark.chapter)}
+                  className="min-w-0 flex-1 text-left"
+                >
+                  <span className="block text-[10px] font-bold text-[#FACC15]">
+                    {bookName(mark.bookId, lang)} {mark.chapter}:{mark.verse}
+                  </span>
+                  <span className="mt-0.5 line-clamp-2 block text-[11px] leading-snug text-violet-50">{mark.text}</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => removeBookmark(mark)}
+                  aria-label={s.removeBookmark}
+                  title={s.removeBookmark}
+                  className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-violet-100/60 transition hover:bg-white/10 hover:text-[#F43F5E]"
+                >
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" aria-hidden="true">
+                    <path d="M6 6l12 12M18 6L6 18" />
+                  </svg>
+                </button>
+              </li>
+            ))}
+          </ul>
+        )}
+      </Modal>
+    </section>
+  );
+}

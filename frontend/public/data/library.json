@@ -1,0 +1,671 @@
+{
+  "version": 2,
+  "books": [
+    {
+      "id": 1,
+      "name": "Itangiriro",
+      "englishName": "Genesis",
+      "abbreviation": "Int",
+      "chapters": 50,
+      "testament": "old"
+    },
+    {
+      "id": 2,
+      "name": "Kuva",
+      "englishName": "Exodus",
+      "abbreviation": "Kuv",
+      "chapters": 40,
+      "testament": "old"
+    },
+    {
+      "id": 3,
+      "name": "Abalewi",
+      "englishName": "Leviticus",
+      "abbreviation": "Bal",
+      "chapters": 27,
+      "testament": "old"
+    },
+    {
+      "id": 4,
+      "name": "Kubara",
+      "englishName": "Numbers",
+      "abbreviation": "Kub",
+      "chapters": 36,
+      "testament": "old"
+    },
+    {
+      "id": 5,
+      "name": "Gutegeka kwa kabiri",
+      "englishName": "Deuteronomy",
+      "abbreviation": "Gut",
+      "chapters": 34,
+      "testament": "old"
+    },
+    {
+      "id": 6,
+      "name": "Yosuwa",
+      "englishName": "Joshua",
+      "abbreviation": "Yos",
+      "chapters": 24,
+      "testament": "old"
+    },
+    {
+      "id": 7,
+      "name": "Abacamanza",
+      "englishName": "Judges",
+      "abbreviation": "Abc",
+      "chapters": 21,
+      "testament": "old"
+    },
+    {
+      "id": 8,
+      "name": "Rutu",
+      "englishName": "Ruth",
+      "abbreviation": "Rut",
+      "chapters": 4,
+      "testament": "old"
+    },
+    {
+      "id": 9,
+      "name": "1 Samueli",
+      "englishName": "1 Samuel",
+      "abbreviation": "1Sam",
+      "chapters": 31,
+      "testament": "old"
+    },
+    {
+      "id": 10,
+      "name": "2 Samueli",
+      "englishName": "2 Samuel",
+      "abbreviation": "2Sam",
+      "chapters": 24,
+      "testament": "old"
+    },
+    {
+      "id": 11,
+      "name": "1 Abami",
+      "englishName": "1 Kings",
+      "abbreviation": "1Abm",
+      "chapters": 22,
+      "testament": "old"
+    },
+    {
+      "id": 12,
+      "name": "2 Abami",
+      "englishName": "2 Kings",
+      "abbreviation": "2Abm",
+      "chapters": 25,
+      "testament": "old"
+    },
+    {
+      "id": 13,
+      "name": "1 Ngoma",
+      "englishName": "1 Chronicles",
+      "abbreviation": "1Ngo",
+      "chapters": 29,
+      "testament": "old"
+    },
+    {
+      "id": 14,
+      "name": "2 Ngoma",
+      "englishName": "2 Chronicles",
+      "abbreviation": "2Ngo",
+      "chapters": 36,
+      "testament": "old"
+    },
+    {
+      "id": 15,
+      "name": "Ezira",
+      "englishName": "Ezra",
+      "abbreviation": "Ezi",
+      "chapters": 10,
+      "testament": "old"
+    },
+    {
+      "id": 16,
+      "name": "Nehemiya",
+      "englishName": "Nehemiah",
+      "abbreviation": "Neh",
+      "chapters": 13,
+      "testament": "old"
+    },
+    {
+      "id": 17,
+      "name": "Este",
+      "englishName": "Esther",
+      "abbreviation": "Est",
+      "chapters": 10,
+      "testament": "old"
+    },
+    {
+      "id": 18,
+      "name": "Yobu",
+      "englishName": "Job",
+      "abbreviation": "Yob",
+      "chapters": 42,
+      "testament": "old"
+    },
+    {
+      "id": 19,
+      "name": "Zaburi",
+      "englishName": "Psalms",
+      "abbreviation": "Zab",
+      "chapters": 150,
+      "testament": "old"
+    },
+    {
+      "id": 20,
+      "name": "Imigani",
+      "englishName": "Proverbs",
+      "abbreviation": "Imi",
+      "chapters": 31,
+      "testament": "old"
+    },
+    {
+      "id": 21,
+      "name": "Umubwiriza",
+      "englishName": "Ecclesiastes",
+      "abbreviation": "Umb",
+      "chapters": 12,
+      "testament": "old"
+    },
+    {
+      "id": 22,
+      "name": "Indirimbo y'Indirimbo",
+      "englishName": "Song of Songs",
+      "abbreviation": "Ind",
+      "chapters": 8,
+      "testament": "old"
+    },
+    {
+      "id": 23,
+      "name": "Yesaya",
+      "englishName": "Isaiah",
+      "abbreviation": "Yes",
+      "chapters": 66,
+      "testament": "old"
+    },
+    {
+      "id": 24,
+      "name": "Yeremiya",
+      "englishName": "Jeremiah",
+      "abbreviation": "Yer",
+      "chapters": 52,
+      "testament": "old"
+    },
+    {
+      "id": 25,
+      "name": "Amaganya",
+      "englishName": "Lamentations",
+      "abbreviation": "Ama",
+      "chapters": 5,
+      "testament": "old"
+    },
+    {
+      "id": 26,
+      "name": "Ezekiyeli",
+      "englishName": "Ezekiel",
+      "abbreviation": "Eze",
+      "chapters": 48,
+      "testament": "old"
+    },
+    {
+      "id": 27,
+      "name": "Daniyeli",
+      "englishName": "Daniel",
+      "abbreviation": "Dan",
+      "chapters": 12,
+      "testament": "old"
+    },
+    {
+      "id": 28,
+      "name": "Hoseya",
+      "englishName": "Hosea",
+      "abbreviation": "Hos",
+      "chapters": 14,
+      "testament": "old"
+    },
+    {
+      "id": 29,
+      "name": "Yoweli",
+      "englishName": "Joel",
+      "abbreviation": "Yow",
+      "chapters": 3,
+      "testament": "old"
+    },
+    {
+      "id": 30,
+      "name": "Amosi",
+      "englishName": "Amos",
+      "abbreviation": "Amo",
+      "chapters": 9,
+      "testament": "old"
+    },
+    {
+      "id": 31,
+      "name": "Obadiya",
+      "englishName": "Obadiah",
+      "abbreviation": "Oba",
+      "chapters": 1,
+      "testament": "old"
+    },
+    {
+      "id": 32,
+      "name": "Yona",
+      "englishName": "Jonah",
+      "abbreviation": "Yon",
+      "chapters": 4,
+      "testament": "old"
+    },
+    {
+      "id": 33,
+      "name": "Mika",
+      "englishName": "Micah",
+      "abbreviation": "Mik",
+      "chapters": 7,
+      "testament": "old"
+    },
+    {
+      "id": 34,
+      "name": "Nahumu",
+      "englishName": "Nahum",
+      "abbreviation": "Nah",
+      "chapters": 3,
+      "testament": "old"
+    },
+    {
+      "id": 35,
+      "name": "Habakuki",
+      "englishName": "Habakkuk",
+      "abbreviation": "Hab",
+      "chapters": 3,
+      "testament": "old"
+    },
+    {
+      "id": 36,
+      "name": "Zefaniya",
+      "englishName": "Zephaniah",
+      "abbreviation": "Zef",
+      "chapters": 3,
+      "testament": "old"
+    },
+    {
+      "id": 37,
+      "name": "Hagayi",
+      "englishName": "Haggai",
+      "abbreviation": "Hag",
+      "chapters": 2,
+      "testament": "old"
+    },
+    {
+      "id": 38,
+      "name": "Zekariya",
+      "englishName": "Zechariah",
+      "abbreviation": "Zek",
+      "chapters": 14,
+      "testament": "old"
+    },
+    {
+      "id": 39,
+      "name": "Malaki",
+      "englishName": "Malachi",
+      "abbreviation": "Mal",
+      "chapters": 4,
+      "testament": "old"
+    },
+    {
+      "id": 40,
+      "name": "Matayo",
+      "englishName": "Matthew",
+      "abbreviation": "Mat",
+      "chapters": 28,
+      "testament": "new"
+    },
+    {
+      "id": 41,
+      "name": "Mariko",
+      "englishName": "Mark",
+      "abbreviation": "Mar",
+      "chapters": 16,
+      "testament": "new"
+    },
+    {
+      "id": 42,
+      "name": "Luka",
+      "englishName": "Luke",
+      "abbreviation": "Luk",
+      "chapters": 24,
+      "testament": "new"
+    },
+    {
+      "id": 43,
+      "name": "Yohana",
+      "englishName": "John",
+      "abbreviation": "Yoh",
+      "chapters": 21,
+      "testament": "new"
+    },
+    {
+      "id": 44,
+      "name": "Ibikorwa by'Intumwa",
+      "englishName": "Acts",
+      "abbreviation": "Ibi",
+      "chapters": 28,
+      "testament": "new"
+    },
+    {
+      "id": 45,
+      "name": "Abaroma",
+      "englishName": "Romans",
+      "abbreviation": "Rom",
+      "chapters": 16,
+      "testament": "new"
+    },
+    {
+      "id": 46,
+      "name": "1 Abakorinto",
+      "englishName": "1 Corinthians",
+      "abbreviation": "1Kor",
+      "chapters": 16,
+      "testament": "new"
+    },
+    {
+      "id": 47,
+      "name": "2 Abakorinto",
+      "englishName": "2 Corinthians",
+      "abbreviation": "2Kor",
+      "chapters": 13,
+      "testament": "new"
+    },
+    {
+      "id": 48,
+      "name": "Abagalatiya",
+      "englishName": "Galatians",
+      "abbreviation": "Gal",
+      "chapters": 6,
+      "testament": "new"
+    },
+    {
+      "id": 49,
+      "name": "Abefeso",
+      "englishName": "Ephesians",
+      "abbreviation": "Efe",
+      "chapters": 6,
+      "testament": "new"
+    },
+    {
+      "id": 50,
+      "name": "Abafilipi",
+      "englishName": "Philippians",
+      "abbreviation": "Fil",
+      "chapters": 4,
+      "testament": "new"
+    },
+    {
+      "id": 51,
+      "name": "Abakolosayi",
+      "englishName": "Colossians",
+      "abbreviation": "Kol",
+      "chapters": 4,
+      "testament": "new"
+    },
+    {
+      "id": 52,
+      "name": "1 Abatesalonike",
+      "englishName": "1 Thessalonians",
+      "abbreviation": "1Tes",
+      "chapters": 5,
+      "testament": "new"
+    },
+    {
+      "id": 53,
+      "name": "2 Abatesalonike",
+      "englishName": "2 Thessalonians",
+      "abbreviation": "2Tes",
+      "chapters": 3,
+      "testament": "new"
+    },
+    {
+      "id": 54,
+      "name": "1 Timoteyo",
+      "englishName": "1 Timothy",
+      "abbreviation": "1Tim",
+      "chapters": 6,
+      "testament": "new"
+    },
+    {
+      "id": 55,
+      "name": "2 Timoteyo",
+      "englishName": "2 Timothy",
+      "abbreviation": "2Tim",
+      "chapters": 4,
+      "testament": "new"
+    },
+    {
+      "id": 56,
+      "name": "Tito",
+      "englishName": "Titus",
+      "abbreviation": "Tit",
+      "chapters": 3,
+      "testament": "new"
+    },
+    {
+      "id": 57,
+      "name": "Filemoni",
+      "englishName": "Philemon",
+      "abbreviation": "Fil",
+      "chapters": 1,
+      "testament": "new"
+    },
+    {
+      "id": 58,
+      "name": "Abaheburayo",
+      "englishName": "Hebrews",
+      "abbreviation": "Heb",
+      "chapters": 13,
+      "testament": "new"
+    },
+    {
+      "id": 59,
+      "name": "Yakobo",
+      "englishName": "James",
+      "abbreviation": "Yak",
+      "chapters": 5,
+      "testament": "new"
+    },
+    {
+      "id": 60,
+      "name": "1 Petero",
+      "englishName": "1 Peter",
+      "abbreviation": "1Pet",
+      "chapters": 5,
+      "testament": "new"
+    },
+    {
+      "id": 61,
+      "name": "2 Petero",
+      "englishName": "2 Peter",
+      "abbreviation": "2Pet",
+      "chapters": 3,
+      "testament": "new"
+    },
+    {
+      "id": 62,
+      "name": "1 Yohana",
+      "englishName": "1 John",
+      "abbreviation": "1Yoh",
+      "chapters": 5,
+      "testament": "new"
+    },
+    {
+      "id": 63,
+      "name": "2 Yohana",
+      "englishName": "2 John",
+      "abbreviation": "2Yoh",
+      "chapters": 1,
+      "testament": "new"
+    },
+    {
+      "id": 64,
+      "name": "3 Yohana",
+      "englishName": "3 John",
+      "abbreviation": "3Yoh",
+      "chapters": 1,
+      "testament": "new"
+    },
+    {
+      "id": 65,
+      "name": "Yuda",
+      "englishName": "Jude",
+      "abbreviation": "Yud",
+      "chapters": 1,
+      "testament": "new"
+    },
+    {
+      "id": 66,
+      "name": "Ibyahishuwe",
+      "englishName": "Revelation",
+      "abbreviation": "Iby",
+      "chapters": 22,
+      "testament": "new"
+    }
+  ],
+  "verses": [
+    {
+      "bookId": 1,
+      "chapter": 1,
+      "verse": 1,
+      "text": "Muri mbere Imana yaremye ijuru n'isi."
+    },
+    {
+      "bookId": 1,
+      "chapter": 1,
+      "verse": 2,
+      "text": "Isi yari ubutayu kandi ubusa, umwijima wari hejuru y'amazi mbere, kandi Umwuka w'Imana yagendagendaga hejuru y'amazi."
+    },
+    {
+      "bookId": 1,
+      "chapter": 1,
+      "verse": 3,
+      "text": "Imana ivuga iti: \"Habemo umucyo!\" Umucyo urabaho."
+    },
+    {
+      "bookId": 1,
+      "chapter": 1,
+      "verse": 4,
+      "text": "Imana ibona ko umucyo ari mwiza, itandukanya umucyo n'umwijima."
+    },
+    {
+      "bookId": 1,
+      "chapter": 1,
+      "verse": 5,
+      "text": "Imana yita umucyo ijoro, n'umwijima yita joro. Haba umugoroba, haba mu gitondo, ni umunsi wa mbere."
+    },
+    {
+      "bookId": 19,
+      "chapter": 23,
+      "verse": 1,
+      "text": "Uwiteka ni umwungeri wanjye, sinzabura icyo nkeneye."
+    },
+    {
+      "bookId": 19,
+      "chapter": 23,
+      "verse": 2,
+      "text": "Anyamika mu byatsi bishyushye, anderekeza ku mazi atuje."
+    },
+    {
+      "bookId": 19,
+      "chapter": 23,
+      "verse": 3,
+      "text": "Ahumuriza ubugingo bwanjye, antwara mu nzira zikiranuka ku bw'izina rye."
+    },
+    {
+      "bookId": 19,
+      "chapter": 23,
+      "verse": 4,
+      "text": "Ndetse nanyuze mu kinzira cy'igicucu cy'urupfu, ntatinye ikibi, kuko uri kumwe nanjye; inkoni yawe n'umuhotora wawe ni byo bimpumuriza."
+    },
+    {
+      "bookId": 19,
+      "chapter": 23,
+      "verse": 5,
+      "text": "Utegurira imbere y'ababisha ameza, usiga amavuta mu mutwe wanjye, ikirahuri cyanjye kirenze."
+    },
+    {
+      "bookId": 19,
+      "chapter": 23,
+      "verse": 6,
+      "text": "Ni ukuri, ibyiza n'imbabazi bizankurikira iminsi yose y'ubugingo bwanjye, kandi nzabana n'Uwiteka iteka ryose."
+    },
+    {
+      "bookId": 43,
+      "chapter": 3,
+      "verse": 16,
+      "text": "Kuko Imana yakunze abari mu isi cyane, ku buryo yatanze Umwana wayo w'ikinege, kugira ngo umwizera wese atarimbuka, ahubwo abone ubugingo buhoraho."
+    },
+    {
+      "bookId": 43,
+      "chapter": 3,
+      "verse": 17,
+      "text": "Imana ntiyatumye Umwana wayo mu isi ngo ace urubanza isi, ahubwo ngo isi izakizwe na we."
+    }
+  ],
+  "hymns": [
+    {
+      "number": 1,
+      "title": "Imana y'Ubuntu",
+      "lyrics": "Imana y'ubuntu, tuzamuhimbaze,\nku bw'urukundo rwayo rudashira.\n\nTwese hamwe, twese hamwe,\nturamuhe icyubahiro.",
+      "chorus": "Tuzamuhimbaze, tuzamuhimbaze,\nImana y'ubuntu ku isi yose.",
+      "category": "praise"
+    },
+    {
+      "number": 2,
+      "title": "Yesu ni Umwami",
+      "lyrics": "Yesu ni Umwami w'ijuru n'isi,\nni we Murokora wacu.\n\nTuvuge amasezerano ye,\nhari mu isi yose.",
+      "chorus": "Yesu ni Umwami, Yesu ni Umwami,\nni we Murokora w'isi yose.",
+      "category": "salvation"
+    },
+    {
+      "number": 3,
+      "title": "Murakoze Imana",
+      "lyrics": "Murakoze Imana yacu,\nku bw'ubuntu bwawe bwinshi.\n\nUduhe umugisha,\niminsi yose y'ubugingo.",
+      "chorus": "Murakoze, murakoze,\nImana yacu y'urukundo.",
+      "category": "praise"
+    },
+    {
+      "number": 4,
+      "title": "Uwiteka ni Umwungeri",
+      "lyrics": "Uwiteka ni umwungeri wanjye,\nsinzabura icyo nkeneye.\n\nAnyamika ku byatsi bishyushye,\nanderekeza ku mazi atuje.",
+      "chorus": "Uwiteka ni umwungeri wanjye,\nsinzabura icyo nkeneye.",
+      "category": "praise"
+    },
+    {
+      "number": 5,
+      "title": "Ijwi ryiza ryanyu",
+      "lyrics": "Ijwi ryiza ryanyu, Yesu,\nryampamagariye iwawe.\n\nNimwumve ijwi ry'Umwami,\nmu byishimo n'urukundo.",
+      "chorus": "Nimwumve ijwi ry'Umwami,\nryiza, ryiza, rituma ndohoka.",
+      "category": "salvation"
+    },
+    {
+      "number": 6,
+      "title": "Umucyo w'isi",
+      "lyrics": "Yesu ni umucyo w'isi,\nukira mu mwijima.\n\nTugende mu mucyo we,\nkugira ngo tuzabone.",
+      "chorus": "Yesu ni umucyo w'isi,\ntugende mu mucyo we.",
+      "category": "salvation"
+    },
+    {
+      "number": 7,
+      "title": "Halleluya",
+      "lyrics": "Halleluya, Halleluya,\nTuvuze Uwiteka.\n\nHalleluya, Halleluya,\nImana yacu ni nziza.",
+      "chorus": "Halleluya, Halleluya,\nImana yacu ni nziza.",
+      "category": "praise"
+    },
+    {
+      "number": 8,
+      "title": "Nzaguma hafi yawe",
+      "lyrics": "Nzaguma hafi yawe, Yesu,\nmu byishimo no mu kubabara.\n\nNdagusaba umwete,\nkugira ngo ntsinde.",
+      "chorus": "Nzaguma hafi yawe, Yesu,\niminsi yose y'ubugingo.",
+      "category": "salvation"
+    }
+  ]
+}

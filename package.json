@@ -1,0 +1,17 @@
+{
+  "name": "tuza-bible-hymnal",
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": ["frontend", "backend"],
+  "engines": {
+    "node": ">=20.19"
+  },
+  "scripts": {
+    "dev": "concurrently \"npm run dev:client\" \"npm run dev:server\"",
+    "dev:client": "npm run dev --workspace=frontend",
+    "dev:server": "npm run dev --workspace=backend",
+    "build": "npm run build --workspace=frontend",
+    "start": "npm run start --workspace=backend",
+    "preview": "npm run preview --workspace=frontend"
+  }
+}
