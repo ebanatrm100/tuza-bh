@@ -70,7 +70,9 @@ const rw = {
   shareCard: 'Sangira ikarita',
   shareFailed: 'Ntibyakunze gukora ishusho. Ongera ugerageze.',
   compareLanguage: 'Gereranya ururimi',
-  compareWith: 'Gereranya na'
+  compareWith: 'Gereranya na',
+  installApp: 'Kuramo App',
+  installedOffline: 'Yashyizweho (nta murandasi)'
 };
 
 export type Strings = { [K in keyof typeof rw]: string };
@@ -136,7 +138,9 @@ const en: Strings = {
   shareCard: 'Share card',
   shareFailed: 'Could not create the image. Please try again.',
   compareLanguage: 'Compare language',
-  compareWith: 'Compare with'
+  compareWith: 'Compare with',
+  installApp: 'Download App',
+  installedOffline: 'Installed Offline'
 };
 
 const sw: Strings = {
@@ -200,7 +204,9 @@ const sw: Strings = {
   shareCard: 'Shiriki kadi',
   shareFailed: 'Imeshindwa kuunda picha. Tafadhali jaribu tena.',
   compareLanguage: 'Linganisha lugha',
-  compareWith: 'Linganisha na'
+  compareWith: 'Linganisha na',
+  installApp: 'Pakua App',
+  installedOffline: 'Imesakinishwa (bila mtandao)'
 };
 
 const fr: Strings = {
@@ -264,7 +270,9 @@ const fr: Strings = {
   shareCard: 'Partager la carte',
   shareFailed: "Impossible de créer l'image. Veuillez réessayer.",
   compareLanguage: 'Comparer la langue',
-  compareWith: 'Comparer avec'
+  compareWith: 'Comparer avec',
+  installApp: "Télécharger l'App",
+  installedOffline: 'Installée hors ligne'
 };
 
 export const translations: Record<Lang, Strings> = { rw, en, sw, fr };

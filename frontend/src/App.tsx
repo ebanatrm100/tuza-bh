@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import Footer from './components/Footer';
+import InstallAppButton from './components/InstallAppButton';
 import LanguageSelector from './components/LanguageSelector';
 import SupportButton from './components/SupportButton';
 import Home from './pages/Home';
@@ -59,7 +60,10 @@ export default function App() {
 
         <header className="relative z-20 flex items-start justify-between gap-3 px-4 pt-4 md:px-8 md:pt-6">
           <SupportButton lang={lang} />
-          <LanguageSelector lang={lang} onChange={setLang} />
+          <div className="flex items-center gap-2">
+            <InstallAppButton lang={lang} />
+            <LanguageSelector lang={lang} onChange={setLang} />
+          </div>
         </header>
 
         <main className="relative z-10 flex flex-1 flex-col px-4 pt-4 pb-20 md:px-8">
