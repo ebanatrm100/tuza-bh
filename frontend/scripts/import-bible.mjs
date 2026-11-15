@@ -1,4 +1,5 @@
 import { mkdir, writeFile } from 'node:fs/promises';
+import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -112,10 +113,15 @@ const ALL = {
   fr: { type: 'midvash', lang: 'fr', version: 'lsg' }
 };
 
+if (args['merge-rw']) {
+  await mergeRwOldTestament();
+  process.exit(0);
+}
+
 const langs = args.lang ? [args.lang] : args.all ? Object.keys(ALL) : [];
 
 if (langs.length === 0) {
-  console.error('Usage: node import-bible.mjs --lang=en | --all');
+  console.error('Usage: node import-bible.mjs --lang=en | --all | --merge-rw');
   process.exit(1);
 }
 
@@ -132,3 +138,110 @@ for (const lang of langs) {
   console.log(`Wrote ${out} — ${bundle.bookCount} books, ${(JSON.stringify(bundle).length / 1024 / 1024).toFixed(2)} MB`);
 }
 console.log('Done.');
+
+async function mergeRwOldTestament() {
+  const candidatePaths = [
+    join(ROOT, 'raw-bibles', 'rw-old-testament.json'),
+    join(ROOT, '..', 'raw-bibles', 'rw-old-testament.json')
+  ];
+  const rawPath = candidatePaths.find((p) => existsSync(p));
+  if (!rawPath) {
+    console.error('Missing raw-bibles/rw-old-testament.json (checked frontend/raw-bibles and project/raw-bibles).');
+    process.exit(1);
+  }
+
+  const existingPath = join(OUT_DIR, 'rw.json');
+  if (!existsSync(existingPath)) {
+    console.error(`Missing existing ${existingPath}.`);
+    process.exit(1);
+  }
+
+  const existing = JSON.parse(readFileSync(existingPath, 'utf8'));
+  const raw = JSON.parse(readFileSync(rawPath, 'utf8'));
+
+  const rawBooks = Array.isArray(raw) ? raw : Array.isArray(raw?.books) ? raw.books : null;
+  if (!rawBooks) {
+    console.error('raw-bibles/rw-old-testament.json must be a bundle with a "books" array or an array of books.');
+    process.exit(1);
+  }
+
+  function normalizeBook(b, index) {
+    if (b && Array.isArray(b.chapters_data)) {
+      const id = Number(b.id) || index + 1;
+      return {
+        id,
+        name: b.name ?? BOOK_NAMES.rw?.[id - 1] ?? `Book ${id}`,
+        englishName: b.englishName ?? ENGLISH_NAMES[id - 1] ?? `Book ${id}`,
+        abbreviation: b.abbreviation ?? b.abbrev ?? '',
+        testament: id <= 39 ? 'old' : 'new',
+        chapters: b.chapters ?? b.chapters_data.length,
+        chapters_data: b.chapters_data
+      };
+    }
+    if (b && Array.isArray(b.chapters) && Array.isArray(b.chapters[0])) {
+      const id = Number(b.id) || index + 1;
+      const chapters = b.chapters.map((verses, ci) => ({
+        chapter: ci + 1,
+        verses: (verses || []).map((text, vi) => ({ verse: vi + 1, text }))
+      }));
+      return {
+        id,
+        name: b.name ?? BOOK_NAMES.rw?.[id - 1] ?? `Book ${id}`,
+        englishName: ENGLISH_NAMES[id - 1] ?? `Book ${id}`,
+        abbreviation: b.abbrev ?? b.abbreviation ?? '',
+        testament: 'old',
+        chapters: chapters.length,
+        chapters_data: chapters
+      };
+    }
+    if (b && Array.isArray(b.chapters) && b.chapters[0] && Array.isArray(b.chapters[0].verses)) {
+      const id = Number(b.bookId ?? b.id) || index + 1;
+      const chapters = b.chapters.map((c) => ({
+        chapter: c.chapter,
+        verses: (c.verses || []).map((v) => ({ verse: v.number ?? v.verse, text: v.text }))
+      }));
+      return {
+        id,
+        name: BOOK_NAMES.rw?.[id - 1] ?? b.name ?? `Book ${id}`,
+        englishName: ENGLISH_NAMES[id - 1] ?? b.englishName ?? `Book ${id}`,
+        abbreviation: b.abbrev ?? b.abbreviation ?? b.book ?? '',
+        testament: 'old',
+        chapters: chapters.length,
+        chapters_data: chapters
+      };
+    }
+    throw new Error(`Unsupported book format at index ${index}`);
+  }
+
+  const normalizedOt = rawBooks.map(normalizeBook).filter((b) => b.id >= 1 && b.id <= 39);
+
+  const otById = new Map(normalizedOt.map((b) => [b.id, b]));
+  const mergedBooks = [];
+  for (let id = 1; id <= 39; id++) {
+    if (otById.has(id)) mergedBooks.push(otById.get(id));
+    else {
+      const existingOt = (existing.books || []).find((b) => b.id === id);
+      if (existingOt) mergedBooks.push(existingOt);
+    }
+  }
+  for (const b of existing.books || []) {
+    if (b.id >= 40) mergedBooks.push(b);
+  }
+
+  mergedBooks.sort((a, b) => a.id - b.id);
+
+  const nextVersion = (Number(existing.version) || 1) + 1;
+  const merged = {
+    ...existing,
+    version: nextVersion,
+    source: `${existing.source || 'rw'} + raw-bibles/rw-old-testament.json`,
+    bookCount: mergedBooks.length,
+    books: mergedBooks
+  };
+
+  await mkdir(OUT_DIR, { recursive: true });
+  writeFileSync(existingPath, JSON.stringify(merged));
+  console.log(`Merged ${normalizedOt.length} Old Testament books into ${existingPath}`);
+  console.log(`Total books: ${merged.bookCount}, version bumped to ${merged.version}`);
+  console.log('Done.');
+}

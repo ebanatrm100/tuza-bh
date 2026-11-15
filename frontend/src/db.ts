@@ -175,6 +175,29 @@ export async function syncHymnal(lang: Lang, force = false): Promise<boolean> {
   return true;
 }
 
+export interface SeedProgress {
+  progress: number;
+  done: boolean;
+}
+
+let seedProgress: SeedProgress = { progress: 0, done: false };
+const seedListeners = new Set<(p: SeedProgress) => void>();
+
+export function getSeedProgress(): SeedProgress {
+  return seedProgress;
+}
+
+export function subscribeSeedProgress(cb: (p: SeedProgress) => void): () => void {
+  seedListeners.add(cb);
+  cb(seedProgress);
+  return () => seedListeners.delete(cb);
+}
+
+function emitSeedProgress(p: SeedProgress) {
+  seedProgress = p;
+  seedListeners.forEach((cb) => cb(seedProgress));
+}
+
 let seedPromise: Promise<void> | null = null;
 
 async function runSeed() {
@@ -190,12 +213,41 @@ async function runSeed() {
       }))
     );
   }
-  await Promise.all(LANGS.map((lang) => Promise.all([syncBible(lang), syncHymnal(lang)])));
+
+  emitSeedProgress({ progress: 0, done: false });
+  let completed = 0;
+  const total = LANGS.length * 2;
+  const bump = () => {
+    completed += 1;
+    emitSeedProgress({ progress: Math.round((completed / total) * 100), done: false });
+  };
+
+  const tasks = LANGS.flatMap((lang) => [
+    (async () => {
+      await syncBible(lang);
+      bump();
+    })(),
+    (async () => {
+      await syncHymnal(lang);
+      bump();
+    })()
+  ]);
+  await Promise.all(tasks);
   await db.meta.put({ key: 'seededAt', value: new Date().toISOString() });
+  emitSeedProgress({ progress: 100, done: true });
 }
 
 export function seedOfflineData(): Promise<void> {
-  seedPromise ??= runSeed();
+  if (!seedPromise) {
+    seedPromise = (async () => {
+      const seeded = await db.meta.get('seededAt');
+      if (seeded) {
+        emitSeedProgress({ progress: 100, done: true });
+        return;
+      }
+      await runSeed();
+    })();
+  }
   return seedPromise;
 }
 
