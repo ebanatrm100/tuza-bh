@@ -18,7 +18,7 @@ html, body, #root {
 
 body {
   font-family: 'Space Grotesk Variable', system-ui, -apple-system, sans-serif;
-  background: linear-gradient(180deg, #F0F9FF 0%, #FFFFFF 45%, #E0F2FE 100%);
+  background: linear-gradient(180deg, #0088FF 0%, #38BDF8 42%, #E0F2FE 78%, #FFFFFF 100%);
   min-height: 100vh;
   color: #1E293B;
 }
@@ -31,9 +31,10 @@ html.dark body {
 /* wavy gradient background */
 .tuza-bg {
   background:
-    radial-gradient(circle at 10% 10%, rgba(14, 165, 233, 0.10) 0%, transparent 40%),
-    radial-gradient(circle at 90% 90%, rgba(6, 182, 212, 0.12) 0%, transparent 40%),
-    linear-gradient(180deg, #F0F9FF 0%, #FFFFFF 45%, #E0F2FE 100%);
+    radial-gradient(circle at 50% 32%, rgba(253, 224, 71, 0.22) 0%, transparent 46%),
+    radial-gradient(circle at 10% 10%, rgba(255, 255, 255, 0.18) 0%, transparent 40%),
+    radial-gradient(circle at 90% 90%, rgba(14, 165, 233, 0.10) 0%, transparent 40%),
+    linear-gradient(180deg, #0088FF 0%, #38BDF8 42%, #E0F2FE 78%, #FFFFFF 100%);
   position: relative;
   overflow: hidden;
 }
@@ -123,7 +124,7 @@ html.dark .tuza-bg {
 /* Light theme overrides (default). Dark mode keeps original classes when html.dark is set. */
 html:not(.dark) .lang-select {
   background: rgba(255, 255, 255, 0.92);
-  border: 1px solid #BAE6FD;
+  border: 1px solid rgba(14, 165, 233, 0.25);
 }
 html:not(.dark) .lang-select svg {
   stroke: #0369A1;
@@ -139,29 +140,38 @@ html:not(.dark) [class~="text-white/82"] { color: #475569 !important; }
 html:not(.dark) [class~="bg-white/[0.08]"],
 html:not(.dark) [class~="bg-white/[0.07]"],
 html:not(.dark) [class~="bg-white/[0.06]"],
-html:not(.dark) [class~="bg-white/[0.04]"] { background-color: #FFFFFF !important; }
+html:not(.dark) [class~="bg-white/[0.04]"] {
+  background-color: rgba(255, 255, 255, 0.94) !important;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(14, 165, 233, 0.25) !important;
+  box-shadow: 0 10px 30px rgba(3, 105, 161, 0.12) !important;
+}
 html:not(.dark) [class~="bg-white/5"],
 html:not(.dark) [class~="bg-white/10"],
-html:not(.dark) [class~="bg-white/15"] { background-color: #E0F2FE !important; }
+html:not(.dark) [class~="bg-white/15"] {
+  background-color: rgba(255, 255, 255, 0.78) !important;
+  border: 1px solid rgba(14, 165, 233, 0.15) !important;
+}
 
-html:not(.dark) [class*="border-white/"] { border-color: #BAE6FD !important; }
+html:not(.dark) [class*="border-white/"] { border-color: rgba(14, 165, 233, 0.25) !important; }
 
-html:not(.dark) [class~="shadow-xl"] { box-shadow: 0 8px 24px rgba(2, 132, 199, 0.08) !important; }
+html:not(.dark) [class~="shadow-xl"] { box-shadow: 0 10px 30px rgba(3, 105, 161, 0.12) !important; }
 
 html:not(.dark) [class~="text-[#FACC15]"] { color: #0369A1 !important; }
-html:not(.dark) [class~="bg-[#FACC15]"] { background-color: #0284C7 !important; color: #FFFFFF !important; }
-html:not(.dark) [class*="bg-[#FACC15]/"] { background-color: rgba(2, 132, 199, 0.10) !important; }
-html:not(.dark) [class*="border-[#FACC15]"] { border-color: #0284C7 !important; }
+html:not(.dark) [class~="bg-[#FACC15]"] { background-color: #0088FF !important; color: #FFFFFF !important; }
+html:not(.dark) [class*="bg-[#FACC15]/"] { background-color: rgba(0, 136, 255, 0.10) !important; }
+html:not(.dark) [class*="border-[#FACC15]"] { border-color: #0088FF !important; }
 html:not(.dark) [class*="from-[#FACC15]"] {
-  --tw-gradient-from: #0284C7 !important;
-  --tw-gradient-to: rgba(2, 132, 199, 0) !important;
+  --tw-gradient-from: #0088FF !important;
+  --tw-gradient-to: rgba(0, 136, 255, 0) !important;
   --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to) !important;
 }
 html:not(.dark) [class*="to-[#F59E0B]"] {
   --tw-gradient-to: #06B6D4 !important;
   --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to) !important;
 }
-html:not(.dark) [class*="rgba(250,204,21"] { box-shadow: 0 0 18px rgba(2, 132, 199, 0.22) !important; }
+html:not(.dark) [class*="rgba(250,204,21"] { box-shadow: 0 0 18px rgba(0, 136, 255, 0.22) !important; }
 
 html:not(.dark) [class*="text-[#3B1277]"],
 html:not(.dark) [class*="text-[#431888]"] { color: #FFFFFF !important; }
@@ -170,9 +180,18 @@ html:not(.dark) [class*="bg-[#2B0F5C]"],
 html:not(.dark) [class*="bg-[#5B21B6]"] { background-color: #FFFFFF !important; color: #1E293B !important; }
 html:not(.dark) [class*="bg-[#1B0736]"] { background-color: rgba(15, 23, 42, 0.45) !important; }
 
-html:not(.dark) [class*="bg-[#F43F5E]/20"] { background-color: rgba(6, 182, 212, 0.15) !important; }
-html:not(.dark) [class*="bg-[#FACC15]/15"] { background-color: rgba(14, 165, 233, 0.12) !important; }
+html:not(.dark) [class*="bg-[#F43F5E]/20"] { background-color: rgba(0, 136, 255, 0.12) !important; }
+html:not(.dark) [class*="bg-[#FACC15]/15"] { background-color: rgba(0, 136, 255, 0.10) !important; }
 
 html:not(.dark) [class*="placeholder:text-white"]::placeholder { color: #475569 !important; }
 
 html:not(.dark) [class~="text-violet-100/90"] { color: #334155 !important; }
+
+html:not(.dark) [class~="text-emerald-200"] { color: #10B981 !important; }
+
+html:not(.dark) .support-tuza {
+  background: linear-gradient(135deg, #0088FF, #06B6D4) !important;
+  box-shadow: 0 0 18px rgba(0, 136, 255, 0.45), 0 0 30px rgba(6, 182, 212, 0.25) !important;
+}
+
+html:not(.dark) .tuza-card-title { color: #0369A1 !important; }

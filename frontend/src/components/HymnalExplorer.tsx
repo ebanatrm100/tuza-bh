@@ -324,7 +324,7 @@ export default function HymnalExplorer({ lang }: { lang: Lang }) {
           <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-[#F43F5E] to-[#9F1239] text-white shadow-md">
             <MusicIcon size={17} />
           </span>
-          <span className="truncate text-base font-black tracking-wide text-white uppercase sm:text-lg">{s.hymnal}</span>
+          <span className="tuza-card-title truncate text-base font-black tracking-wide text-white uppercase sm:text-lg">{s.hymnal}</span>
         </h2>
         <div className="flex shrink-0 items-center gap-1.5">
           <TraditionSelect lang={lang} value={tradition} onChange={selectTradition} />

@@ -41,11 +41,11 @@ export default function Home({ lang }: { lang: Lang }) {
   return (
     <div className="mx-auto flex w-full max-w-6xl flex-1 flex-col">
       <div className="mb-4 flex flex-col items-center text-center sm:mb-5">
-        <h1 className="text-[1.7rem] leading-[1.05] font-black tracking-tight text-white sm:text-4xl">
+        <h1 className="text-[1.7rem] leading-[1.05] font-black tracking-tight text-white keep-white sm:text-4xl" style={{ textShadow: '0 2px 10px rgba(3, 105, 161, 0.45)' }}>
           TUZA
-          <span className="mx-1.5 text-[#FACC15] glow-gold">BIBLE</span>
-          <span className="text-[#F43F5E]">+</span>
-          <span className="ml-1.5">HYMNAL</span>
+          <span className="mx-1.5 text-white keep-white">BIBLE</span>
+          <span className="text-white keep-white">+</span>
+          <span className="ml-1.5 text-white keep-white">HYMNAL</span>
         </h1>
 
         <div className="mt-2 sm:mt-3">
@@ -54,7 +54,7 @@ export default function Home({ lang }: { lang: Lang }) {
           </span>
         </div>
 
-        <p className="mt-1.5 max-w-xl text-[11px] font-medium text-white/92 sm:text-sm">{s.subtitle}</p>
+        <p className="mt-1.5 max-w-xl text-[11px] font-medium text-white/92 keep-white sm:text-sm">{s.subtitle}</p>
 
         <span className="mt-2 inline-flex items-center gap-1.5 rounded-full border border-[#FACC15]/25 bg-[#FACC15]/10 px-2.5 py-0.5 text-[9px] font-semibold tracking-wide text-[#FACC15] uppercase">
           <span className="h-1.5 w-1.5 rounded-full bg-[#FACC15]" aria-hidden="true" />
