@@ -1,5 +1,5 @@
 {
-  "version": 2,
+  "version": 3,
   "books": [
     {
       "id": 1,
@@ -528,6 +528,69 @@
       "abbreviation": "Iby",
       "chapters": 22,
       "testament": "new"
+    },
+    {
+      "id": 67,
+      "name": "Tobi",
+      "englishName": "Tobit",
+      "abbreviation": "Tob",
+      "chapters": 14,
+      "testament": "old",
+      "deuterocanonical": true
+    },
+    {
+      "id": 68,
+      "name": "Yudita",
+      "englishName": "Judith",
+      "abbreviation": "Jdt",
+      "chapters": 16,
+      "testament": "old",
+      "deuterocanonical": true
+    },
+    {
+      "id": 69,
+      "name": "Ubuhanga",
+      "englishName": "Wisdom",
+      "abbreviation": "Wis",
+      "chapters": 19,
+      "testament": "old",
+      "deuterocanonical": true
+    },
+    {
+      "id": 70,
+      "name": "Mwene Siraki",
+      "englishName": "Sirach",
+      "abbreviation": "Sir",
+      "chapters": 51,
+      "testament": "old",
+      "deuterocanonical": true
+    },
+    {
+      "id": 71,
+      "name": "Baruki",
+      "englishName": "Baruch",
+      "abbreviation": "Bar",
+      "chapters": 6,
+      "testament": "old",
+      "deuterocanonical": true
+    },
+    {
+      "id": 72,
+      "name": "Icya mbere cy'Abamakabe",
+      "englishName": "1 Maccabees",
+      "abbreviation": "1Macc",
+      "chapters": 16,
+      "testament": "old",
+      "deuterocanonical": true
+    },
+    {
+      "id": 73,
+      "name": "Icya kabiri cy'Abamakabe",
+      "englishName": "2 Maccabees",
+      "abbreviation": "2Macc",
+      "chapters": 15,
+      "testament": "old",
+      "deuterocanonical": true
     }
   ],
   "verses": [

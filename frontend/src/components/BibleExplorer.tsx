@@ -1,7 +1,9 @@
 import { useEffect, useMemo, useState } from 'react';
 import { db, seedOfflineData, type BibleBook, type BibleVerse } from '../db';
-import { BOOKS, bookName } from '../data/books';
+import { BOOKS, bookName, isDeuterocanonical, sortBooksForTradition } from '../data/books';
+import { bookCountForTradition } from '../data/traditions';
 import { LANGS, LANG_LABELS, t, type Lang } from '../i18n';
+import { useChurchTradition } from '../lib/useChurchTradition';
 import { usePersistentState } from '../lib/usePersistentState';
 import type { ShareCardOptions } from '../lib/shareCard';
 import BackButton from './BackButton';
@@ -9,6 +11,7 @@ import Modal from './Modal';
 import ShareCardModal from './ShareCardModal';
 import TabCard from './TabCard';
 import TextSizeControl from './TextSizeControl';
+import TraditionSelect from './TraditionSelect';
 import { BibleIcon, CompareIcon, CrossIcon, ScrollIcon, SearchIcon, ShareIcon, StarIcon } from './icons';
 
 type Testament = 'old' | 'new';
@@ -23,11 +26,9 @@ interface Bookmark {
 const BOOKMARKS_KEY = 'tuza-bookmarks-v1';
 const FONT_KEY = 'tuza-bible-font';
 
-const OLD_COUNT = BOOKS.filter((b) => b.testament === 'old').length;
-const NEW_COUNT = BOOKS.filter((b) => b.testament === 'new').length;
-
 export default function BibleExplorer({ lang }: { lang: Lang }) {
   const s = t(lang);
+  const [tradition, setTradition] = useChurchTradition();
 
   const [books, setBooks] = useState<BibleBook[]>([]);
   const [testament, setTestament] = useState<Testament | null>(null);
@@ -44,6 +45,14 @@ export default function BibleExplorer({ lang }: { lang: Lang }) {
   const [compareLang, setCompareLang] = useState<Lang>(lang === 'en' ? 'rw' : 'en');
   const [compareData, setCompareData] = useState<{ key: string; rows: BibleVerse[] }>({ key: '', rows: [] });
 
+  const visibleBooks = useMemo(() => sortBooksForTradition(books, tradition), [books, tradition]);
+  const visibleBookIds = useMemo(() => new Set(visibleBooks.map((row) => row.id)), [visibleBooks]);
+  const activeBook = book && visibleBookIds.has(book.id) ? book : null;
+  const oldCount = BOOKS.filter(
+    (row) => row.testament === 'old' && (tradition === 'catholic' || !row.deuterocanonical)
+  ).length;
+  const newCount = BOOKS.filter((row) => row.testament === 'new').length;
+
   useEffect(() => {
     seedOfflineData()
       .then(() => db.bibleBooks.orderBy('id').toArray())
@@ -51,14 +60,14 @@ export default function BibleExplorer({ lang }: { lang: Lang }) {
   }, []);
 
   useEffect(() => {
-    if (!book || chapter === null) {
+    if (!activeBook || chapter === null) {
       setChapterVerses([]);
       return;
     }
     let alive = true;
     db.bibleVerses
       .where('[lang+bookId+chapter]')
-      .equals([lang, book.id, chapter])
+      .equals([lang, activeBook.id, chapter])
       .sortBy('verse')
       .then((rows) => {
         if (alive) setChapterVerses(rows);
@@ -66,24 +75,24 @@ export default function BibleExplorer({ lang }: { lang: Lang }) {
     return () => {
       alive = false;
     };
-  }, [book, chapter, lang]);
+  }, [activeBook, chapter, lang]);
 
-  const compareKey = book && chapter !== null ? `${compareLang}:${book.id}:${chapter}` : '';
+  const compareKey = activeBook && chapter !== null ? `${compareLang}:${activeBook.id}:${chapter}` : '';
 
   useEffect(() => {
-    if (!compareOn || !book || chapter === null) return;
+    if (!compareOn || !activeBook || chapter === null) return;
     let alive = true;
     db.bibleVerses
       .where('[lang+bookId+chapter]')
-      .equals([compareLang, book.id, chapter])
+      .equals([compareLang, activeBook.id, chapter])
       .sortBy('verse')
       .then((rows) => {
-        if (alive) setCompareData({ key: `${compareLang}:${book.id}:${chapter}`, rows });
+        if (alive) setCompareData({ key: `${compareLang}:${activeBook.id}:${chapter}`, rows });
       });
     return () => {
       alive = false;
     };
-  }, [compareOn, compareLang, book, chapter]);
+  }, [compareOn, compareLang, activeBook, chapter]);
 
   // Only use rows that belong to the chapter currently open.
   const compareByVerse = useMemo(() => {
@@ -104,7 +113,7 @@ export default function BibleExplorer({ lang }: { lang: Lang }) {
     db.bibleVerses
       .where('lang')
       .equals(lang)
-      .filter((verse) => verse.text.toLowerCase().includes(normalized))
+      .filter((verse) => visibleBookIds.has(verse.bookId) && verse.text.toLowerCase().includes(normalized))
       .limit(24)
       .toArray()
       .then((rows) => {
@@ -113,11 +122,11 @@ export default function BibleExplorer({ lang }: { lang: Lang }) {
     return () => {
       alive = false;
     };
-  }, [normalized, lang]);
+  }, [normalized, lang, visibleBookIds]);
 
   const bookMatches = useMemo(
-    () => (normalized ? books.filter((b) => bookName(b.id, lang).toLowerCase().includes(normalized)) : []),
-    [books, normalized, lang]
+    () => (normalized ? visibleBooks.filter((b) => bookName(b.id, lang).toLowerCase().includes(normalized)) : []),
+    [visibleBooks, normalized, lang]
   );
 
   const selectTestament = (next: Testament) => {
@@ -141,7 +150,7 @@ export default function BibleExplorer({ lang }: { lang: Lang }) {
   };
 
   const openReference = (bookId: number, targetChapter: number) => {
-    const target = books.find((b) => b.id === bookId);
+    const target = visibleBooks.find((b) => b.id === bookId);
     if (!target) return;
     setBookmarksOpen(false);
     setQuery('');
@@ -151,17 +160,17 @@ export default function BibleExplorer({ lang }: { lang: Lang }) {
   };
 
   const isBookmarked = (verse: number) =>
-    bookmarks.some((b) => b.bookId === book?.id && b.chapter === chapter && b.verse === verse);
+    bookmarks.some((b) => b.bookId === activeBook?.id && b.chapter === chapter && b.verse === verse);
 
   const toggleBookmark = (verse: BibleVerse) => {
-    if (!book || chapter === null) return;
+    if (!activeBook || chapter === null) return;
     const existing = bookmarks.find(
-      (b) => b.bookId === book.id && b.chapter === chapter && b.verse === verse.verse
+      (b) => b.bookId === activeBook.id && b.chapter === chapter && b.verse === verse.verse
     );
     setBookmarks(
       existing
         ? bookmarks.filter((b) => b !== existing)
-        : [...bookmarks, { bookId: book.id, chapter, verse: verse.verse, text: verse.text }]
+        : [...bookmarks, { bookId: activeBook.id, chapter, verse: verse.verse, text: verse.text }]
     );
   };
 
@@ -223,7 +232,7 @@ export default function BibleExplorer({ lang }: { lang: Lang }) {
         )}
       </div>
     );
-  } else if (book && chapter !== null) {
+  } else if (activeBook && chapter !== null) {
     body = (
       <div>
         <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
@@ -270,13 +279,18 @@ export default function BibleExplorer({ lang }: { lang: Lang }) {
           </div>
         )}
         <h3 className="mb-2 text-sm font-bold text-white">
-          {bookName(book.id, lang)} <span className="text-violet-100/60">· {s.chapter} {chapter}</span>
+          {bookName(activeBook.id, lang)} <span className="text-violet-100/60">· {s.chapter} {chapter}</span>
           {savedVerses > 0 && <span className="ml-2 text-[10px] font-semibold text-[#FACC15]">★ {savedVerses}</span>}
         </h3>
         {chapterVerses.length === 0 ? (
-          <p className="rounded-xl border border-dashed border-white/15 px-3 py-6 text-center text-xs text-violet-100/60">
-            {s.noVerses}
-          </p>
+          <div className="rounded-xl border border-dashed border-white/15 px-3 py-6 text-center text-xs text-violet-100/60">
+            <p>{s.noVerses}</p>
+            {isDeuterocanonical(activeBook.id) && (
+              <p className="mt-1.5 text-[10px] leading-relaxed text-[#FACC15]/80">
+                {s.deuterocanonUnavailable}
+              </p>
+            )}
+          </div>
         ) : (
           <div className={compareOn ? 'space-y-2' : 'space-y-1'}>
             {chapterVerses.map((verse) => {
@@ -304,9 +318,9 @@ export default function BibleExplorer({ lang }: { lang: Lang }) {
                         <button
                           type="button"
                           onClick={() =>
-                            book &&
+                            activeBook &&
                             setShareCard({
-                              reference: `${bookName(book.id, lang)} ${chapter}:${verse.verse}`,
+                              reference: `${bookName(activeBook.id, lang)} ${chapter}:${verse.verse}`,
                               text: verse.text
                             })
                           }
@@ -349,21 +363,26 @@ export default function BibleExplorer({ lang }: { lang: Lang }) {
         )}
       </div>
     );
-  } else if (book) {
+  } else if (activeBook) {
     body = (
       <div>
         <div className="mb-2 flex items-center justify-between gap-2">
           <BackButton label={s.backToBooks} onClick={() => setBook(null)} />
           <span className="text-[9px] font-bold tracking-wide text-[#FACC15]/80 uppercase">
-            {book.testament === 'old' ? s.oldTestament : s.newTestament}
+            {activeBook.testament === 'old' ? s.oldTestament : s.newTestament}
           </span>
         </div>
-        <h3 className="mb-0.5 text-sm font-bold text-white">{bookName(book.id, lang)}</h3>
-        <p className="mb-2.5 text-[10px] text-violet-100/60">
-          {book.chapters} {s.chapters}
+        <h3 className="mb-0.5 text-sm font-bold text-white">{bookName(activeBook.id, lang)}</h3>
+        <p className="mb-2.5 flex flex-wrap items-center gap-1.5 text-[10px] text-violet-100/60">
+          <span>{activeBook.chapters} {s.chapters}</span>
+          {isDeuterocanonical(activeBook.id) && (
+            <span className="rounded-full border border-[#FACC15]/30 bg-[#FACC15]/10 px-1.5 py-0.5 text-[8px] font-bold tracking-wide text-[#FACC15]/90 uppercase">
+              {s.deuterocanonical}
+            </span>
+          )}
         </p>
         <div className="grid grid-cols-6 gap-1.5 sm:grid-cols-8">
-          {Array.from({ length: book.chapters }, (_, i) => i + 1).map((ch) => (
+          {Array.from({ length: activeBook.chapters }, (_, i) => i + 1).map((ch) => (
             <button
               key={ch}
               type="button"
@@ -377,7 +396,7 @@ export default function BibleExplorer({ lang }: { lang: Lang }) {
       </div>
     );
   } else if (testament) {
-    const list = books.filter((b) => b.testament === testament);
+    const list = visibleBooks.filter((b) => b.testament === testament);
     body = (
       <div>
         <div className="mb-2 flex items-center justify-between gap-2">
@@ -418,16 +437,19 @@ export default function BibleExplorer({ lang }: { lang: Lang }) {
       aria-labelledby="bible-panel-title"
       className="flex flex-col rounded-3xl border border-white/15 bg-white/[0.07] p-3 shadow-xl backdrop-blur-md sm:p-4"
     >
-      <header className="mb-3 flex items-center justify-between gap-2">
+      <header className="mb-3 flex flex-wrap items-center justify-between gap-2">
         <h2 id="bible-panel-title" className="flex min-w-0 items-center gap-2">
           <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-[#FACC15] to-[#F59E0B] text-[#3B1277] shadow-md">
             <BibleIcon size={17} />
           </span>
           <span className="truncate text-base font-black tracking-wide text-white uppercase sm:text-lg">{s.bible}</span>
         </h2>
-        <span className="shrink-0 rounded-full border border-white/15 bg-white/5 px-2.5 py-1 text-[10px] font-semibold text-violet-100/70">
-          {BOOKS.length} {s.books}
-        </span>
+        <div className="flex shrink-0 items-center gap-1.5">
+          <TraditionSelect lang={lang} value={tradition} onChange={setTradition} />
+          <span className="shrink-0 rounded-full border border-white/15 bg-white/5 px-2 py-1 text-[10px] font-semibold text-violet-100/70">
+            {bookCountForTradition(tradition)} {s.books}
+          </span>
+        </div>
       </header>
 
       <div className="mb-3 flex items-center gap-2">
@@ -461,7 +483,7 @@ export default function BibleExplorer({ lang }: { lang: Lang }) {
       <div className="mb-3 grid grid-cols-2 gap-2">
         <TabCard
           title={s.oldTestament}
-          meta={`${OLD_COUNT} ${s.books}`}
+          meta={`${oldCount} ${s.books}`}
           icon={<ScrollIcon size={16} />}
           active={testament === 'old'}
           accent="gold"
@@ -469,7 +491,7 @@ export default function BibleExplorer({ lang }: { lang: Lang }) {
         />
         <TabCard
           title={s.newTestament}
-          meta={`${NEW_COUNT} ${s.books}`}
+          meta={`${newCount} ${s.books}`}
           icon={<CrossIcon size={16} />}
           active={testament === 'new'}
           accent="coral"

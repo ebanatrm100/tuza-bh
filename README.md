@@ -29,7 +29,7 @@ One Node/Express service serves both the API and the built React app, so a singl
     └── src/
         ├── db.ts            # Dexie schema, JSON sync, offline seeding
         ├── i18n.ts          # Kinyarwanda / English / Kiswahili / French
-        ├── data/books.ts    # canonical 66-book metadata (fallback structure)
+        ├── data/books.ts    # 66 shared books + 7 Deuterocanonical book records
         ├── pages/           # Home (two-column split), Bible, Hymns
         └── components/      # hero illustration, header controls, fixed footer
 ```
@@ -133,7 +133,7 @@ Supported fields on each book: `id`, `name`, `englishName`, `abbreviation`, `cha
 - `bookId` is the 1-based canonical position (Genesis = 1, Psalms = 19, John = 43).
 - **Bump `version`** whenever content changes; clients replace their IndexedDB verses/hymns when they
   see a newer version. The service worker also refreshes the precached JSON automatically.
-- The shipped file contains the 66-book structure plus sample verses (Genesis 1, Psalm 23, John 3) and
+- The shipped file contains 73 book records plus sample verses (Genesis 1, Psalm 23, John 3) and
   8 hymns so the app is fully functional out of the box.
 
 ### Per-language offline bundles
@@ -150,10 +150,11 @@ node frontend/scripts/import-bible.mjs --lang=en   # or --all
 node frontend/scripts/import-hymnals.mjs
 ```
 
-`import-bible.mjs` pulls public-domain sources: English (KJV), Kiswahili (SRUV) and Kinyarwanda (Rufumbira NT)
-from `thiagobodruk/bible`, and French (Louis Segond 1910) from `midvash/bible-data`. The Kinyarwanda bundle
-contains the 27 New Testament books only — the full Bibiliya Yera Old Testament is copyrighted and cannot be
-redistributed without a license; supply a licensed source via the importer for the remaining 39 books.
+`import-bible.mjs` pulls public-domain sources: English (KJV) and Kiswahili (SRUV) from `thiagobodruk/bible`,
+Kinyarwanda (Bibiliya Yera, BYSB 2001) from `inezabonte/bysb`, and French (Louis Segond 1910) from
+`midvash/bible-data`. The shipped English bundle additionally merges the seven Deuterocanonical books from the
+KJV + Apocrypha (`en_kjva`) source. Kinyarwanda, Kiswahili and French show the 73-book Catholic canon but only
+have text for the shared 66 books. Review each source's license before redistributing a bundle.
 
 Each bundle carries its own `version`; clients re-sync the affected language into IndexedDB when it changes.
 

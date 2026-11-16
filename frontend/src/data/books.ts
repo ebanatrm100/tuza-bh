@@ -1,3 +1,4 @@
+import type { Tradition } from './traditions';
 import { type Lang } from '../i18n';
 
 export interface BookSeed {
@@ -8,9 +9,11 @@ export interface BookSeed {
   abbreviation: string;
   chapters: number;
   testament: 'old' | 'new';
+  deuterocanonical?: boolean;
 }
 
-// Canonical 66-book structure with names in all four supported languages.
+// Canonical structure with names in all four supported languages. IDs 1–66 are
+// the shared Protestant canon; 67–73 are the seven Catholic Deuterocanonical books.
 export const BOOKS: BookSeed[] = [
   { name: 'Itangiriro', englishName: 'Genesis', swahiliName: 'Mwanzo', frenchName: 'Genèse', abbreviation: 'Int', chapters: 50, testament: 'old' },
   { name: 'Kuva', englishName: 'Exodus', swahiliName: 'Kutoka', frenchName: 'Exode', abbreviation: 'Kuv', chapters: 40, testament: 'old' },
@@ -77,12 +80,44 @@ export const BOOKS: BookSeed[] = [
   { name: '2 Yohana', englishName: '2 John', swahiliName: '2 Yohana', frenchName: '2 Jean', abbreviation: '2Yoh', chapters: 1, testament: 'new' },
   { name: '3 Yohana', englishName: '3 John', swahiliName: '3 Yohana', frenchName: '3 Jean', abbreviation: '3Yoh', chapters: 1, testament: 'new' },
   { name: 'Yuda', englishName: 'Jude', swahiliName: 'Yuda', frenchName: 'Jude', abbreviation: 'Yud', chapters: 1, testament: 'new' },
-  { name: 'Ibyahishuwe', englishName: 'Revelation', swahiliName: 'Ufunuo', frenchName: 'Apocalypse', abbreviation: 'Iby', chapters: 22, testament: 'new' }
+  { name: 'Ibyahishuwe', englishName: 'Revelation', swahiliName: 'Ufunuo', frenchName: 'Apocalypse', abbreviation: 'Iby', chapters: 22, testament: 'new' },
+  { name: 'Tobi', englishName: 'Tobit', swahiliName: 'Tobiti', frenchName: 'Tobie', abbreviation: 'Tob', chapters: 14, testament: 'old', deuterocanonical: true },
+  { name: 'Yudita', englishName: 'Judith', swahiliName: 'Yudita', frenchName: 'Judith', abbreviation: 'Jdt', chapters: 16, testament: 'old', deuterocanonical: true },
+  { name: 'Ubuhanga', englishName: 'Wisdom', swahiliName: 'Hekima', frenchName: 'Sagesse', abbreviation: 'Wis', chapters: 19, testament: 'old', deuterocanonical: true },
+  { name: 'Mwene Siraki', englishName: 'Sirach', swahiliName: 'Sira', frenchName: 'Siracide', abbreviation: 'Sir', chapters: 51, testament: 'old', deuterocanonical: true },
+  { name: 'Baruki', englishName: 'Baruch', swahiliName: 'Baruku', frenchName: 'Baruch', abbreviation: 'Bar', chapters: 6, testament: 'old', deuterocanonical: true },
+  { name: "Icya mbere cy'Abamakabe", englishName: '1 Maccabees', swahiliName: 'Wamakabayo 1', frenchName: '1 Maccabées', abbreviation: '1Macc', chapters: 16, testament: 'old', deuterocanonical: true },
+  { name: "Icya kabiri cy'Abamakabe", englishName: '2 Maccabees', swahiliName: 'Wamakabayo 2', frenchName: '2 Maccabées', abbreviation: '2Macc', chapters: 15, testament: 'old', deuterocanonical: true }
 ];
 
 const BOOK_BY_ID = new Map(BOOKS.map((book, index) => [index + 1, book]));
 
-/** Book ids are stable (1–66), so names always follow the active language. */
+const DEUTEROCANONICAL_IDS = new Set([67, 68, 69, 70, 71, 72, 73]);
+
+// Catholic order places the Deuterocanonical books among the historical,
+// wisdom, and prophetic books instead of appending them after Malachi.
+export const CATHOLIC_ORDER = [
+  1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 67, 68, 17, 72, 73,
+  18, 19, 20, 21, 22, 69, 70, 23, 24, 25, 71, 26, 27, 28, 29, 30, 31, 32, 33,
+  34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52,
+  53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66
+];
+
+const CATHOLIC_RANK = new Map(CATHOLIC_ORDER.map((id, index) => [id, index]));
+
+export function isDeuterocanonical(id: number): boolean {
+  return DEUTEROCANONICAL_IDS.has(id);
+}
+
+/** Filter to the active canon and keep Catholic books in their liturgical order. */
+export function sortBooksForTradition<T extends { id: number }>(books: T[], tradition: Tradition): T[] {
+  if (tradition !== 'catholic') return books.filter((book) => !isDeuterocanonical(book.id));
+  return [...books].sort(
+    (a, b) => (CATHOLIC_RANK.get(a.id) ?? Number.MAX_SAFE_INTEGER) - (CATHOLIC_RANK.get(b.id) ?? Number.MAX_SAFE_INTEGER)
+  );
+}
+
+/** Book ids are stable (1–73), so names always follow the active language. */
 export function bookName(id: number, lang: Lang): string {
   const book = BOOK_BY_ID.get(id);
   if (!book) return '';

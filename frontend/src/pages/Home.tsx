@@ -2,26 +2,40 @@ import BibleExplorer from '../components/BibleExplorer';
 import HeroIllustration from '../components/HeroIllustration';
 import HymnalExplorer from '../components/HymnalExplorer';
 import UnifiedSearch from '../components/UnifiedSearch';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { getSeedProgress, subscribeSeedProgress, type SeedProgress } from '../db';
 import { t, type Lang } from '../i18n';
 
 export default function Home({ lang }: { lang: Lang }) {
   const s = t(lang);
   const [progress, setProgress] = useState<SeedProgress>(() => getSeedProgress());
-  const [showProgress, setShowProgress] = useState(() => !getSeedProgress().done);
+  const initialProgress = getSeedProgress();
+  const [showProgress, setShowProgress] = useState(() => !initialProgress.done && initialProgress.progress > 0);
+  const wasVisible = useRef(showProgress);
 
   useEffect(() => {
+    let hideTimer: number | undefined;
+
     const unsubscribe = subscribeSeedProgress((p) => {
       setProgress(p);
+
       if (p.done) {
-        setShowProgress(true);
-        window.setTimeout(() => setShowProgress(false), 4000);
+        if (!wasVisible.current) return;
+        hideTimer = window.setTimeout(() => {
+          wasVisible.current = false;
+          setShowProgress(false);
+        }, 4000);
       } else {
+        if (hideTimer) window.clearTimeout(hideTimer);
+        wasVisible.current = true;
         setShowProgress(true);
       }
     });
-    return unsubscribe;
+
+    return () => {
+      unsubscribe();
+      if (hideTimer) window.clearTimeout(hideTimer);
+    };
   }, []);
 
   return (

@@ -9,6 +9,7 @@ export interface BibleBook {
   abbreviation: string;
   chapters: number;
   testament: 'old' | 'new';
+  deuterocanonical?: boolean;
 }
 
 export interface BibleVerse {
@@ -21,6 +22,14 @@ export interface BibleVerse {
 }
 
 export type HymnCollection = 'praise' | 'salvation';
+export type HymnEdition = 'protestant' | 'sda';
+
+export interface HymnAltVersion {
+  bookName?: string;
+  chorus?: string;
+  stanzas?: string[];
+  lyrics?: string;
+}
 
 export interface Hymn {
   id?: number;
@@ -33,6 +42,9 @@ export interface Hymn {
   category?: string;
   stanzas?: string[];
   translated?: boolean;
+  edition?: HymnEdition;
+  bookName?: string;
+  altVersion?: HymnAltVersion;
 }
 
 export interface LibraryMeta {
@@ -43,7 +55,7 @@ export interface LibraryMeta {
 interface BibleBundle {
   version?: number;
   language: Lang;
-  books: { id: number; name: string; englishName: string; abbreviation: string; testament: 'old' | 'new'; chapters: number; chapters_data: { chapter: number; verses: { verse: number; text: string }[] }[] }[];
+  books: { id: number; name: string; englishName: string; abbreviation: string; testament: 'old' | 'new'; chapters: number; deuterocanonical?: boolean; chapters_data: { chapter: number; verses: { verse: number; text: string }[] }[] }[];
 }
 
 interface HymnalBundle {
@@ -81,6 +93,28 @@ class TuzaDB extends Dexie {
       hymns: '++id, lang, number, [lang+number]',
       meta: 'key'
     }).upgrade(async (tx) => {
+      await tx.table('bibleVerses').clear();
+      await tx.table('hymns').clear();
+      await tx.table('meta').clear();
+    });
+    this.version(4).stores({
+      bibleBooks: 'id, name, englishName, testament',
+      bibleVerses: '++id, lang, bookId, chapter, [lang+bookId+chapter]',
+      hymns: '++id, lang, number, [lang+number]',
+      meta: 'key'
+    }).upgrade(async (tx) => {
+      await tx.table('hymns').clear();
+      await tx.table('meta').clear();
+    });
+    this.version(5).stores({
+      bibleBooks: 'id, name, englishName, testament',
+      bibleVerses: '++id, lang, bookId, chapter, [lang+bookId+chapter]',
+      hymns: '++id, lang, number, [lang+number]',
+      meta: 'key'
+    }).upgrade(async (tx) => {
+      // A new canon, new edition metadata, and bumped JSON versions must all
+      // reseed installed PWAs instead of trusting the old seededAt marker.
+      await tx.table('bibleBooks').clear();
       await tx.table('bibleVerses').clear();
       await tx.table('hymns').clear();
       await tx.table('meta').clear();
@@ -154,6 +188,9 @@ export async function syncHymnal(lang: Lang, force = false): Promise<boolean> {
     for (const h of bundle.collections?.[collection] ?? []) {
       const stanzas = Array.isArray(h.stanzas) && h.stanzas.length ? h.stanzas : (h.lyrics ? h.lyrics.split(/\n{2,}/).map((s: string) => s.trim()).filter(Boolean) : []);
       const lyrics = stanzas.join('\n\n') || h.lyrics || '';
+      const altStanzas = Array.isArray(h.altVersion?.stanzas) && h.altVersion.stanzas.length
+        ? h.altVersion.stanzas
+        : (h.altVersion?.lyrics ? h.altVersion.lyrics.split(/\n{2,}/).map((s: string) => s.trim()).filter(Boolean) : []);
       rows.push({
         lang,
         number: h.number,
@@ -162,7 +199,17 @@ export async function syncHymnal(lang: Lang, force = false): Promise<boolean> {
         chorus: h.chorus,
         collection: collection as HymnCollection,
         stanzas,
-        translated: h.translated
+        translated: h.translated,
+        edition: h.edition,
+        bookName: h.bookName,
+        altVersion: h.altVersion
+          ? {
+              bookName: h.altVersion.bookName,
+              chorus: h.altVersion.chorus,
+              stanzas: altStanzas.length ? altStanzas : h.altVersion.stanzas,
+              lyrics: altStanzas.length ? altStanzas.join('\n\n') : h.altVersion.lyrics
+            }
+          : undefined
       });
     }
   }
@@ -201,18 +248,17 @@ function emitSeedProgress(p: SeedProgress) {
 let seedPromise: Promise<void> | null = null;
 
 async function runSeed() {
-  if ((await db.bibleBooks.count()) === 0) {
-    await db.bibleBooks.bulkPut(
-      BOOKS.map((b, i) => ({
-        id: i + 1,
-        name: b.name,
-        englishName: b.englishName,
-        abbreviation: b.abbreviation,
-        chapters: b.chapters,
-        testament: b.testament
-      }))
-    );
-  }
+  await db.bibleBooks.bulkPut(
+    BOOKS.map((b, i) => ({
+      id: i + 1,
+      name: b.name,
+      englishName: b.englishName,
+      abbreviation: b.abbreviation,
+      chapters: b.chapters,
+      testament: b.testament,
+      deuterocanonical: b.deuterocanonical
+    }))
+  );
 
   emitSeedProgress({ progress: 0, done: false });
   let completed = 0;

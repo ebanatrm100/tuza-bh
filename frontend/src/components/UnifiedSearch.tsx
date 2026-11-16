@@ -1,11 +1,15 @@
 import { useEffect, useState } from 'react';
 import { db, seedOfflineData, type BibleVerse, type Hymn } from '../db';
-import { bookName } from '../data/books';
+import { bookName, isDeuterocanonical } from '../data/books';
+import { dataEditionForTradition } from '../data/traditions';
 import { t, type Lang } from '../i18n';
+import { useChurchTradition } from '../lib/useChurchTradition';
 import { SearchIcon } from './icons';
 
 export default function UnifiedSearch({ lang }: { lang: Lang }) {
   const s = t(lang);
+  const [tradition] = useChurchTradition();
+  const dataEdition = dataEditionForTradition(tradition);
   const [query, setQuery] = useState('');
   const [verses, setVerses] = useState<BibleVerse[]>([]);
   const [hymns, setHymns] = useState<Hymn[]>([]);
@@ -21,8 +25,24 @@ export default function UnifiedSearch({ lang }: { lang: Lang }) {
     let alive = true;
     seedOfflineData().then(() => {
       Promise.all([
-        db.bibleVerses.where('lang').equals(lang).filter((v) => v.text.toLowerCase().includes(normalized)).limit(12).toArray(),
-        db.hymns.where('lang').equals(lang).filter((h) => h.title.toLowerCase().includes(normalized) || h.lyrics.toLowerCase().includes(normalized) || (h.chorus ?? '').toLowerCase().includes(normalized)).limit(12).toArray()
+        db.bibleVerses
+          .where('lang')
+          .equals(lang)
+          .filter((v) => (tradition === 'catholic' || !isDeuterocanonical(v.bookId)) && v.text.toLowerCase().includes(normalized))
+          .limit(12)
+          .toArray(),
+        db.hymns
+          .where('lang')
+          .equals(lang)
+          .filter(
+            (h) =>
+              (!h.edition || h.edition === dataEdition) &&
+              (h.title.toLowerCase().includes(normalized) ||
+                h.lyrics.toLowerCase().includes(normalized) ||
+                (h.chorus ?? '').toLowerCase().includes(normalized))
+          )
+          .limit(12)
+          .toArray()
       ]).then(([vs, hs]) => {
         if (alive) {
           setVerses(vs);
@@ -33,7 +53,7 @@ export default function UnifiedSearch({ lang }: { lang: Lang }) {
     return () => {
       alive = false;
     };
-  }, [normalized, lang]);
+  }, [normalized, lang, tradition, dataEdition]);
 
   return (
     <section className="mt-4 rounded-3xl border border-white/15 bg-white/[0.07] p-3 shadow-xl backdrop-blur-md sm:p-4">
@@ -81,10 +101,11 @@ export default function UnifiedSearch({ lang }: { lang: Lang }) {
               <p className="mb-1.5 text-[10px] font-bold tracking-[0.18em] text-[#F43F5E]/80 uppercase">{s.hymnal}</p>
               <ul className="space-y-1.5">
                 {hymns.map((h) => (
-                  <li key={`${h.lang}-${h.number}`}>
+                  <li key={`${h.lang}-${h.edition ?? 'common'}-${h.collection}-${h.number}-${h.title}`}>
                     <div className="rounded-lg border border-white/10 bg-white/5 px-2.5 py-2">
                       <span className="block text-[10px] font-bold text-[#F43F5E]">
                         {s.hymnNumber} {h.number} · {h.title}
+                        {h.bookName ? ` · ${h.bookName}` : ''}
                       </span>
                       <span className="mt-0.5 line-clamp-2 block text-[11px] leading-snug text-violet-50">
                         {h.lyrics.split('\n')[0]}
