@@ -87,7 +87,7 @@ export default function ShareCardModal({
           {previewUrl ? (
             <img src={previewUrl} alt={card?.reference ?? s.shareCard} className="block w-full" />
           ) : (
-            <div className="flex aspect-square items-center justify-center text-xs text-violet-100/60">
+            <div className="flex aspect-square items-center justify-center text-xs font-medium text-white/92">
               {busy ? s.supportProcessing : note}
             </div>
           )}

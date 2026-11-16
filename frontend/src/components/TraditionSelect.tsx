@@ -77,7 +77,7 @@ export default function TraditionSelect({ lang, value, onChange }: TraditionSele
                   className={`w-full rounded-lg px-2.5 py-2 text-left text-[11px] font-semibold transition ${
                     selected
                       ? 'bg-[#FACC15] text-[#3B1277]'
-                      : 'text-violet-50 hover:bg-white/10 hover:text-white'
+                      : 'text-white hover:bg-white/10 hover:text-white'
                   }`}
                 >
                   {traditionLabel(tradition, s)}

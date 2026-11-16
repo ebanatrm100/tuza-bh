@@ -154,7 +154,7 @@ export default function HymnalExplorer({ lang }: { lang: Lang }) {
               className={`flex items-center gap-1.5 rounded-xl border px-2 py-1 text-[10px] font-bold tracking-wide uppercase transition ${
                 compareOn
                   ? 'border-[#FACC15]/70 bg-[#FACC15]/15 text-[#FACC15]'
-                  : 'border-white/15 bg-white/5 text-violet-100/70 hover:border-[#FACC15]/50 hover:text-white'
+                  : 'border-white/15 bg-white/5 font-medium text-white/92 hover:border-[#FACC15]/50 hover:text-white'
               }`}
             >
               <CompareIcon size={12} />
@@ -172,7 +172,7 @@ export default function HymnalExplorer({ lang }: { lang: Lang }) {
 
         {compareOn && (
           <div className="mb-2 flex items-center gap-2 rounded-xl border border-[#FACC15]/30 bg-[#FACC15]/10 px-2.5 py-1.5">
-            <span className="text-[9px] font-bold tracking-[0.16em] text-[#FACC15]/80 uppercase">{s.compareWith}</span>
+            <span className="text-[9px] font-bold tracking-[0.16em] text-[#FACC15] uppercase">{s.compareWith}</span>
             <select
               value={compareLang}
               onChange={(e) => setCompareLang(e.target.value as Lang)}
@@ -194,7 +194,7 @@ export default function HymnalExplorer({ lang }: { lang: Lang }) {
               {s.hymnNumber} {selected.number}
             </p>
             {displayBook && (
-              <span className="rounded-full border border-white/15 bg-white/5 px-2 py-0.5 text-[8px] font-bold tracking-wide text-violet-100/70 uppercase">
+              <span className="rounded-full border border-white/15 bg-white/5 px-2 py-0.5 text-[8px] font-bold tracking-wide text-white/92 uppercase">
                 {displayBook}
               </span>
             )}
@@ -211,7 +211,7 @@ export default function HymnalExplorer({ lang }: { lang: Lang }) {
               className={`mt-2 flex w-full items-center justify-between gap-2 rounded-xl border px-2.5 py-1.5 text-left transition ${
                 showingAlt
                   ? 'border-[#FACC15]/60 bg-[#FACC15]/15 text-[#FACC15]'
-                  : 'border-white/15 bg-white/[0.04] text-violet-100/70 hover:border-[#FACC15]/40 hover:text-white'
+                  : 'border-white/15 bg-white/[0.04] font-medium text-white/92 hover:border-[#FACC15]/40 hover:text-white'
               }`}
             >
               <span className="flex min-w-0 items-center gap-1.5 text-[9px] font-semibold sm:text-[10px]">
@@ -228,7 +228,7 @@ export default function HymnalExplorer({ lang }: { lang: Lang }) {
             {displayStanzas.map((stanza, index) => (
               <div key={index}>
                 <div className="mb-1 flex items-center justify-between gap-2">
-                  <p className="text-[9px] font-bold tracking-[0.18em] text-[#FACC15]/70 uppercase">
+                  <p className="text-[9px] font-bold tracking-[0.18em] text-[#FACC15] uppercase">
                     {s.stanza} {index + 1}
                   </p>
                   <button
@@ -236,24 +236,24 @@ export default function HymnalExplorer({ lang }: { lang: Lang }) {
                     onClick={() => shareHymn(stanza, ` — ${s.stanza} ${index + 1}`)}
                     aria-label={s.shareCard}
                     title={s.shareCard}
-                    className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-violet-100/30 transition hover:text-[#FACC15]"
+                    className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full font-medium text-white/92 transition hover:text-[#FACC15]"
                   >
                     <ShareIcon size={12} />
                   </button>
                 </div>
                 <div className={compareOn ? 'grid gap-2 sm:grid-cols-2' : undefined}>
                   <p
-                    className="whitespace-pre-line text-violet-50"
+                    className="whitespace-pre-line text-white"
                     style={{ fontSize: `${0.95 * fontScale}rem`, lineHeight: 1.8 }}
                   >
                     {stanza}
                   </p>
                   {compareOn && (
                     <p
-                      className="whitespace-pre-line border-t border-white/10 pt-1.5 text-violet-100/85 sm:border-t-0 sm:border-l sm:pt-0 sm:pl-2.5"
+                      className="whitespace-pre-line border-t border-white/10 pt-1.5 font-medium text-white/92 sm:border-t-0 sm:border-l sm:pt-0 sm:pl-2.5"
                       style={{ fontSize: `${0.9 * fontScale}rem`, lineHeight: 1.7 }}
                     >
-                      <span className="mr-1.5 text-[0.65em] font-bold tracking-wide text-[#FACC15]/70 uppercase">
+                      <span className="mr-1.5 text-[0.65em] font-bold tracking-wide text-[#FACC15] uppercase">
                         {LANG_LABELS[compareLang]}
                       </span>
                       {parallelStanzas[index] ?? '—'}
@@ -273,24 +273,24 @@ export default function HymnalExplorer({ lang }: { lang: Lang }) {
                         onClick={() => shareHymn(displayChorus, ` — ${chorusLabel}`)}
                         aria-label={s.shareCard}
                         title={s.shareCard}
-                        className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-violet-100/30 transition hover:text-[#FACC15]"
+                        className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full font-medium text-white/92 transition hover:text-[#FACC15]"
                       >
                         <ShareIcon size={12} />
                       </button>
                     </div>
                     <div className={compareOn ? 'grid gap-2 sm:grid-cols-2' : undefined}>
                       <p
-                        className="whitespace-pre-line text-violet-50/90 italic"
+                        className="whitespace-pre-line font-medium text-white/92 italic"
                         style={{ fontSize: `${0.9 * fontScale}rem`, lineHeight: 1.7 }}
                       >
                         {displayChorus}
                       </p>
                       {compareOn && (
                         <p
-                          className="whitespace-pre-line border-t border-white/10 pt-1.5 text-violet-100/85 italic sm:border-t-0 sm:border-l sm:pt-0 sm:pl-2.5"
+                          className="whitespace-pre-line border-t border-white/10 pt-1.5 font-medium text-white/92 italic sm:border-t-0 sm:border-l sm:pt-0 sm:pl-2.5"
                           style={{ fontSize: `${0.85 * fontScale}rem`, lineHeight: 1.7 }}
                         >
-                          <span className="mr-1.5 text-[0.65em] font-bold tracking-wide text-[#F43F5E]/80 uppercase">
+                          <span className="mr-1.5 text-[0.65em] font-bold tracking-wide text-[#F43F5E] uppercase">
                             {LANG_LABELS[compareLang]}
                           </span>
                           {compareHymn?.chorus ?? '—'}
@@ -328,7 +328,7 @@ export default function HymnalExplorer({ lang }: { lang: Lang }) {
         </h2>
         <div className="flex shrink-0 items-center gap-1.5">
           <TraditionSelect lang={lang} value={tradition} onChange={selectTradition} />
-          <span className="shrink-0 rounded-full border border-white/15 bg-white/5 px-2 py-1 text-[10px] font-semibold text-violet-100/70">
+          <span className="shrink-0 rounded-full border border-white/15 bg-white/5 px-2 py-1 text-[10px] font-semibold text-white/92">
             {traditionHymns.length} {s.songs}
           </span>
         </div>
@@ -368,7 +368,7 @@ export default function HymnalExplorer({ lang }: { lang: Lang }) {
 
       {effectiveCollection ? (
         <>
-          <div className="mb-2.5 flex items-center gap-2 rounded-xl border border-white/15 bg-white/10 px-2.5 py-2 focus-within:border-[#F43F5E]/70">
+          <div className="mb-2.5 flex items-center gap-2 rounded-xl border border-white/35 bg-white/10 px-2.5 py-2 focus-within:border-[#F43F5E]/70">
             <SearchIcon />
             <input
               type="search"
@@ -376,7 +376,7 @@ export default function HymnalExplorer({ lang }: { lang: Lang }) {
               onChange={(event) => setQuery(event.target.value)}
               placeholder={s.searchHymns}
               aria-label={s.searchHymns}
-              className="w-full min-w-0 bg-transparent text-xs text-white outline-none placeholder:text-violet-100/45"
+              className="w-full min-w-0 bg-transparent text-xs text-white outline-none placeholder:text-white/82"
             />
           </div>
 
@@ -397,25 +397,25 @@ export default function HymnalExplorer({ lang }: { lang: Lang }) {
                   </span>
                   <span className="min-w-0 flex-1">
                     <span className="block truncate text-[11px] font-semibold text-white sm:text-xs">{hymn.title}</span>
-                    <span className="block truncate text-[9px] text-violet-100/55 sm:text-[10px]">
+                    <span className="block truncate text-[9px] font-medium text-white/92 sm:text-[10px]">
                       {hymn.lyrics.split('\n')[0]}
                     </span>
                   </span>
-                  <span className="shrink-0 text-violet-100/40">
+                  <span className="shrink-0 font-medium text-white/92">
                     <ChevronIcon size={13} />
                   </span>
                 </button>
               </li>
             ))}
             {visible.length === 0 && (
-              <li className="rounded-xl border border-dashed border-white/15 px-3 py-6 text-center text-xs text-violet-100/60">
+              <li className="rounded-xl border border-dashed border-white/15 px-3 py-6 text-center text-xs font-medium text-white/92">
                 {s.noHymns}
               </li>
             )}
           </ul>
         </>
       ) : (
-        <p className="min-h-[7rem] rounded-xl border border-dashed border-white/15 px-3 py-6 text-center text-xs text-violet-100/60">
+        <p className="min-h-[7rem] rounded-xl border border-dashed border-white/15 px-3 py-6 text-center text-xs font-medium text-white/92">
           {s.chooseCollection}
         </p>
       )}

@@ -189,7 +189,7 @@ export default function BibleExplorer({ lang }: { lang: Lang }) {
       <div className="space-y-3">
         {bookMatches.length > 0 && (
           <div>
-            <p className="mb-1.5 text-[10px] font-bold tracking-[0.18em] text-[#FACC15]/80 uppercase">{s.books}</p>
+            <p className="mb-1.5 text-[10px] font-bold tracking-[0.18em] text-[#FACC15] uppercase">{s.books}</p>
             <div className="grid grid-cols-2 gap-1.5">
               {bookMatches.map((b) => (
                 <button
@@ -206,7 +206,7 @@ export default function BibleExplorer({ lang }: { lang: Lang }) {
         )}
         {verseHits.length > 0 && (
           <div>
-            <p className="mb-1.5 text-[10px] font-bold tracking-[0.18em] text-[#FACC15]/80 uppercase">{s.verses}</p>
+            <p className="mb-1.5 text-[10px] font-bold tracking-[0.18em] text-[#FACC15] uppercase">{s.verses}</p>
             <ul className="space-y-1.5">
               {verseHits.map((verse) => (
                 <li key={`${verse.bookId}-${verse.chapter}-${verse.verse}`}>
@@ -218,7 +218,7 @@ export default function BibleExplorer({ lang }: { lang: Lang }) {
                     <span className="block text-[10px] font-bold text-[#FACC15]">
                       {bookName(verse.bookId, lang)} {verse.chapter}:{verse.verse}
                     </span>
-                    <span className="mt-0.5 line-clamp-2 block text-[11px] leading-snug text-violet-50">
+                    <span className="mt-0.5 line-clamp-2 block text-[11px] leading-snug text-white">
                       {verse.text}
                     </span>
                   </button>
@@ -228,7 +228,7 @@ export default function BibleExplorer({ lang }: { lang: Lang }) {
           </div>
         )}
         {bookMatches.length === 0 && verseHits.length === 0 && (
-          <p className="py-6 text-center text-xs text-violet-100/60">{s.noResults}</p>
+          <p className="py-6 text-center text-xs font-medium text-white/92">{s.noResults}</p>
         )}
       </div>
     );
@@ -246,7 +246,7 @@ export default function BibleExplorer({ lang }: { lang: Lang }) {
               className={`flex items-center gap-1.5 rounded-xl border px-2 py-1 text-[10px] font-bold tracking-wide uppercase transition ${
                 compareOn
                   ? 'border-[#FACC15]/70 bg-[#FACC15]/15 text-[#FACC15]'
-                  : 'border-white/15 bg-white/5 text-violet-100/70 hover:border-[#FACC15]/50 hover:text-white'
+                  : 'border-white/15 bg-white/5 font-medium text-white/92 hover:border-[#FACC15]/50 hover:text-white'
               }`}
             >
               <CompareIcon size={12} />
@@ -263,7 +263,7 @@ export default function BibleExplorer({ lang }: { lang: Lang }) {
         </div>
         {compareOn && (
           <div className="mb-2 flex items-center gap-2 rounded-xl border border-[#FACC15]/30 bg-[#FACC15]/10 px-2.5 py-1.5">
-            <span className="text-[9px] font-bold tracking-[0.16em] text-[#FACC15]/80 uppercase">{s.compareWith}</span>
+            <span className="text-[9px] font-bold tracking-[0.16em] text-[#FACC15] uppercase">{s.compareWith}</span>
             <select
               value={compareLang}
               onChange={(e) => setCompareLang(e.target.value as Lang)}
@@ -279,14 +279,14 @@ export default function BibleExplorer({ lang }: { lang: Lang }) {
           </div>
         )}
         <h3 className="mb-2 text-sm font-bold text-white">
-          {bookName(activeBook.id, lang)} <span className="text-violet-100/60">· {s.chapter} {chapter}</span>
+          {bookName(activeBook.id, lang)} <span className="font-medium text-white/92">· {s.chapter} {chapter}</span>
           {savedVerses > 0 && <span className="ml-2 text-[10px] font-semibold text-[#FACC15]">★ {savedVerses}</span>}
         </h3>
         {chapterVerses.length === 0 ? (
-          <div className="rounded-xl border border-dashed border-white/15 px-3 py-6 text-center text-xs text-violet-100/60">
+          <div className="rounded-xl border border-dashed border-white/15 px-3 py-6 text-center text-xs font-medium text-white/92">
             <p>{s.noVerses}</p>
             {isDeuterocanonical(activeBook.id) && (
-              <p className="mt-1.5 text-[10px] leading-relaxed text-[#FACC15]/80">
+              <p className="mt-1.5 text-[10px] leading-relaxed text-[#FACC15]">
                 {s.deuterocanonUnavailable}
               </p>
             )}
@@ -308,7 +308,7 @@ export default function BibleExplorer({ lang }: { lang: Lang }) {
                   <div className={compareOn ? 'grid gap-2 sm:grid-cols-2' : 'contents'}>
                     <div className="flex items-start gap-1.5">
                       <p
-                        className="flex-1 text-violet-50"
+                        className="flex-1 text-white"
                         style={{ fontSize: `${0.95 * fontScale}rem`, lineHeight: 1.75 }}
                       >
                         <sup className="mr-1.5 text-[0.65em] font-bold text-[#FACC15]">{verse.verse}</sup>
@@ -326,7 +326,7 @@ export default function BibleExplorer({ lang }: { lang: Lang }) {
                           }
                           aria-label={s.shareCard}
                           title={s.shareCard}
-                          className="flex h-6 w-6 items-center justify-center rounded-full text-violet-100/25 transition hover:text-[#FACC15]"
+                          className="flex h-6 w-6 items-center justify-center rounded-full font-medium text-white/92 transition hover:text-[#FACC15]"
                         >
                           <ShareIcon size={12} />
                         </button>
@@ -337,7 +337,7 @@ export default function BibleExplorer({ lang }: { lang: Lang }) {
                           title={saved ? s.removeBookmark : s.bookmarkVerse}
                           aria-pressed={saved}
                           className={`flex h-6 w-6 items-center justify-center rounded-full transition ${
-                            saved ? 'text-[#FACC15]' : 'text-violet-100/25 hover:text-[#FACC15]'
+                            saved ? 'text-[#FACC15]' : 'font-medium text-white/92 hover:text-[#FACC15]'
                           }`}
                         >
                           <StarIcon size={13} filled={saved} />
@@ -346,10 +346,10 @@ export default function BibleExplorer({ lang }: { lang: Lang }) {
                     </div>
                     {compareOn && (
                       <p
-                        className="whitespace-pre-line border-t border-white/10 pt-1.5 text-violet-100/85 sm:border-t-0 sm:border-l sm:pt-0 sm:pl-2.5"
+                        className="whitespace-pre-line border-t border-white/10 pt-1.5 font-medium text-white/92 sm:border-t-0 sm:border-l sm:pt-0 sm:pl-2.5"
                         style={{ fontSize: `${0.9 * fontScale}rem`, lineHeight: 1.7 }}
                       >
-                        <span className="mr-1.5 text-[0.65em] font-bold tracking-wide text-[#FACC15]/70 uppercase">
+                        <span className="mr-1.5 text-[0.65em] font-bold tracking-wide text-[#FACC15] uppercase">
                           {LANG_LABELS[compareLang]}
                         </span>
                         {parallel ?? '—'}
@@ -368,15 +368,15 @@ export default function BibleExplorer({ lang }: { lang: Lang }) {
       <div>
         <div className="mb-2 flex items-center justify-between gap-2">
           <BackButton label={s.backToBooks} onClick={() => setBook(null)} />
-          <span className="text-[9px] font-bold tracking-wide text-[#FACC15]/80 uppercase">
+          <span className="text-[9px] font-bold tracking-wide text-[#FACC15] uppercase">
             {activeBook.testament === 'old' ? s.oldTestament : s.newTestament}
           </span>
         </div>
         <h3 className="mb-0.5 text-sm font-bold text-white">{bookName(activeBook.id, lang)}</h3>
-        <p className="mb-2.5 flex flex-wrap items-center gap-1.5 text-[10px] text-violet-100/60">
+        <p className="mb-2.5 flex flex-wrap items-center gap-1.5 text-[10px] font-medium text-white/92">
           <span>{activeBook.chapters} {s.chapters}</span>
           {isDeuterocanonical(activeBook.id) && (
-            <span className="rounded-full border border-[#FACC15]/30 bg-[#FACC15]/10 px-1.5 py-0.5 text-[8px] font-bold tracking-wide text-[#FACC15]/90 uppercase">
+            <span className="rounded-full border border-[#FACC15]/30 bg-[#FACC15]/10 px-1.5 py-0.5 text-[8px] font-bold tracking-wide text-[#FACC15] uppercase">
               {s.deuterocanonical}
             </span>
           )}
@@ -400,10 +400,10 @@ export default function BibleExplorer({ lang }: { lang: Lang }) {
     body = (
       <div>
         <div className="mb-2 flex items-center justify-between gap-2">
-          <p className="text-[10px] font-bold tracking-[0.18em] text-[#FACC15]/80 uppercase">
+          <p className="text-[10px] font-bold tracking-[0.18em] text-[#FACC15] uppercase">
             {testament === 'old' ? s.oldTestament : s.newTestament}
           </p>
-          <span className="text-[10px] text-violet-100/55">
+          <span className="text-[10px] font-medium text-white/92">
             {list.length} {s.books}
           </span>
         </div>
@@ -416,7 +416,7 @@ export default function BibleExplorer({ lang }: { lang: Lang }) {
               className="rounded-lg border border-white/10 bg-white/5 px-2.5 py-2 text-left transition hover:border-[#F43F5E]/60 hover:bg-white/10"
             >
               <span className="block truncate text-[11px] font-semibold text-white">{bookName(b.id, lang)}</span>
-              <span className="block text-[9px] text-violet-100/55">
+              <span className="block text-[9px] font-medium text-white/92">
                 {b.chapters} {s.chapters}
               </span>
             </button>
@@ -426,7 +426,7 @@ export default function BibleExplorer({ lang }: { lang: Lang }) {
     );
   } else {
     body = (
-      <p className="rounded-xl border border-dashed border-white/15 px-3 py-6 text-center text-xs text-violet-100/60">
+      <p className="rounded-xl border border-dashed border-white/15 px-3 py-6 text-center text-xs font-medium text-white/92">
         {s.chooseTestament}
       </p>
     );
@@ -446,14 +446,14 @@ export default function BibleExplorer({ lang }: { lang: Lang }) {
         </h2>
         <div className="flex shrink-0 items-center gap-1.5">
           <TraditionSelect lang={lang} value={tradition} onChange={setTradition} />
-          <span className="shrink-0 rounded-full border border-white/15 bg-white/5 px-2 py-1 text-[10px] font-semibold text-violet-100/70">
+          <span className="shrink-0 rounded-full border border-white/15 bg-white/5 px-2 py-1 text-[10px] font-semibold text-white/92">
             {bookCountForTradition(tradition)} {s.books}
           </span>
         </div>
       </header>
 
       <div className="mb-3 flex items-center gap-2">
-        <div className="flex flex-1 items-center gap-2 rounded-xl border border-white/15 bg-white/10 px-2.5 py-2 focus-within:border-[#FACC15]/70">
+        <div className="flex flex-1 items-center gap-2 rounded-xl border border-white/35 bg-white/10 px-2.5 py-2 focus-within:border-[#FACC15]/70">
           <SearchIcon />
           <input
             type="search"
@@ -461,7 +461,7 @@ export default function BibleExplorer({ lang }: { lang: Lang }) {
             onChange={(event) => setQuery(event.target.value)}
             placeholder={s.searchBible}
             aria-label={s.searchBible}
-            className="w-full min-w-0 bg-transparent text-xs text-white outline-none placeholder:text-violet-100/45"
+            className="w-full min-w-0 bg-transparent text-xs text-white outline-none placeholder:text-white/82"
           />
         </div>
         <button
@@ -510,7 +510,7 @@ export default function BibleExplorer({ lang }: { lang: Lang }) {
 
       <Modal open={bookmarksOpen} title={s.bookmarks} closeLabel={s.close} onClose={() => setBookmarksOpen(false)}>
         {bookmarks.length === 0 ? (
-          <p className="py-6 text-center text-xs text-violet-100/60">{s.noBookmarks}</p>
+          <p className="py-6 text-center text-xs font-medium text-white/92">{s.noBookmarks}</p>
         ) : (
           <ul className="space-y-1.5">
             {bookmarks.map((mark) => (
@@ -526,14 +526,14 @@ export default function BibleExplorer({ lang }: { lang: Lang }) {
                   <span className="block text-[10px] font-bold text-[#FACC15]">
                     {bookName(mark.bookId, lang)} {mark.chapter}:{mark.verse}
                   </span>
-                  <span className="mt-0.5 line-clamp-2 block text-[11px] leading-snug text-violet-50">{mark.text}</span>
+                  <span className="mt-0.5 line-clamp-2 block text-[11px] leading-snug text-white">{mark.text}</span>
                 </button>
                 <button
                   type="button"
                   onClick={() => removeBookmark(mark)}
                   aria-label={s.removeBookmark}
                   title={s.removeBookmark}
-                  className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-violet-100/60 transition hover:bg-white/10 hover:text-[#F43F5E]"
+                  className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full font-medium text-white/92 transition hover:bg-white/10 hover:text-[#F43F5E]"
                 >
                   <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" aria-hidden="true">
                     <path d="M6 6l12 12M18 6L6 18" />

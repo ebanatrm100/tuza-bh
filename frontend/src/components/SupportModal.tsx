@@ -108,7 +108,7 @@ export default function SupportModal({ open, onClose, lang }: SupportModalProps)
       <div className="space-y-3">
         {/* Currency */}
         <div>
-          <label className="mb-1 block text-[10px] font-bold tracking-[0.18em] text-[#FACC15]/80 uppercase">
+          <label className="mb-1 block text-[10px] font-bold tracking-[0.18em] text-[#FACC15] uppercase">
             {s.supportCurrency}
           </label>
           <select
@@ -126,7 +126,7 @@ export default function SupportModal({ open, onClose, lang }: SupportModalProps)
 
         {/* From which number */}
         <div>
-          <label className="mb-1 block text-[10px] font-bold tracking-[0.18em] text-[#FACC15]/80 uppercase">
+          <label className="mb-1 block text-[10px] font-bold tracking-[0.18em] text-[#FACC15] uppercase">
             {s.supportFromNumber}
           </label>
           <div className="rounded-2xl border border-violet-400/40 bg-gradient-to-br from-[#5B21B6]/60 to-[#3B1277]/80 p-3 shadow-[0_0_24px_rgba(91,33,182,0.45)]">
@@ -134,7 +134,7 @@ export default function SupportModal({ open, onClose, lang }: SupportModalProps)
               <select
                 value={countryCode}
                 onChange={(e) => setCountryCode(e.target.value)}
-                className="w-28 shrink-0 rounded-lg border border-white/20 bg-white/10 px-2 py-2 text-xs text-white outline-none focus:border-[#FACC15]/70"
+                className="w-28 shrink-0 rounded-lg border border-white/35 bg-white/10 px-2 py-2 text-xs text-white outline-none focus:border-[#FACC15]/70"
               >
                 {COUNTRY_CODES.map((c) => (
                   <option key={c.code} value={c.dial} className="bg-[#2B0F5C] text-white">
@@ -147,7 +147,7 @@ export default function SupportModal({ open, onClose, lang }: SupportModalProps)
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
                 placeholder={s.supportPhonePlaceholder}
-                className="w-full rounded-lg border border-white/20 bg-white/10 px-3 py-2 text-sm text-white outline-none placeholder:text-violet-100/40 focus:border-[#FACC15]/70"
+                className="w-full rounded-lg border border-white/35 bg-white/10 px-3 py-2 text-sm text-white outline-none placeholder:text-white/82 focus:border-[#FACC15]/70"
               />
             </div>
           </div>
@@ -155,7 +155,7 @@ export default function SupportModal({ open, onClose, lang }: SupportModalProps)
 
         {/* Amount */}
         <div>
-          <label className="mb-1 block text-[10px] font-bold tracking-[0.18em] text-[#FACC15]/80 uppercase">
+          <label className="mb-1 block text-[10px] font-bold tracking-[0.18em] text-[#FACC15] uppercase">
             {s.supportAmount}
           </label>
           <div className="flex items-center gap-2 rounded-xl border border-white/15 bg-white/10 px-3 py-2 focus-within:border-[#FACC15]/70">
@@ -167,9 +167,9 @@ export default function SupportModal({ open, onClose, lang }: SupportModalProps)
               value={amount}
               onChange={(e) => setAmount(e.target.value)}
               placeholder="0"
-              className="w-full bg-transparent text-sm text-white outline-none placeholder:text-violet-100/40"
+              className="w-full bg-transparent text-sm text-white outline-none placeholder:text-white/82"
             />
-            <span className="text-xs text-violet-100/60">{currency}</span>
+            <span className="text-xs font-medium text-white/92">{currency}</span>
           </div>
         </div>
 

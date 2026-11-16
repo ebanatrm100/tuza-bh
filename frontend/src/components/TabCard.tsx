@@ -44,7 +44,7 @@ export default function TabCard({
         <span className="block text-[11px] leading-tight font-extrabold tracking-wide text-white uppercase sm:text-xs">
           {title}
         </span>
-        <span className="mt-0.5 block text-[10px] font-medium text-violet-100/60">{meta}</span>
+        <span className="mt-0.5 block text-[10px] font-medium text-white/92">{meta}</span>
       </span>
     </button>
   );

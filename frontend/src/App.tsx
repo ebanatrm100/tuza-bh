@@ -104,7 +104,7 @@ export default function App() {
                 type="button"
                 onClick={dismissNotifBanner}
                 aria-label={s.close}
-                className="text-lg leading-none text-white/80 hover:text-white"
+                className="text-lg leading-none text-white hover:text-white"
               >
                 ×
               </button>

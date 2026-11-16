@@ -43,7 +43,7 @@ export default function Modal({
             onClick={onClose}
             aria-label={closeLabel}
             title={closeLabel}
-            className="flex h-8 w-8 items-center justify-center rounded-full border border-white/15 bg-white/5 text-violet-100/80 transition hover:border-white/30 hover:text-white"
+            className="flex h-8 w-8 items-center justify-center rounded-full border border-white/15 bg-white/5 font-medium text-white/92 transition hover:border-white/30 hover:text-white"
           >
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" aria-hidden="true">
               <path d="M6 6l12 12M18 6L6 18" />

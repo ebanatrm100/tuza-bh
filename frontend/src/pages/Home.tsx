@@ -54,7 +54,7 @@ export default function Home({ lang }: { lang: Lang }) {
           </span>
         </div>
 
-        <p className="mt-1.5 max-w-xl text-[11px] font-medium text-violet-100/85 sm:text-sm">{s.subtitle}</p>
+        <p className="mt-1.5 max-w-xl text-[11px] font-medium text-white/92 sm:text-sm">{s.subtitle}</p>
 
         <span className="mt-2 inline-flex items-center gap-1.5 rounded-full border border-[#FACC15]/25 bg-[#FACC15]/10 px-2.5 py-0.5 text-[9px] font-semibold tracking-wide text-[#FACC15] uppercase">
           <span className="h-1.5 w-1.5 rounded-full bg-[#FACC15]" aria-hidden="true" />
@@ -70,7 +70,7 @@ export default function Home({ lang }: { lang: Lang }) {
                   style={{ width: `${progress.progress}%` }}
                 />
               </div>
-              <p className="mt-1 text-center text-[9px] font-semibold tracking-wide text-[#FACC15]/90">
+              <p className="mt-1 text-center text-[9px] font-semibold tracking-wide text-[#FACC15]">
                 {s.offlineSaving.replace('{percent}', String(progress.progress))}
               </p>
             </div>

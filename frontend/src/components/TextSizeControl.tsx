@@ -32,7 +32,7 @@ export default function TextSizeControl({
         disabled={scale <= MIN}
         aria-label={decreaseLabel}
         title={decreaseLabel}
-        className="flex h-7 w-7 items-center justify-center rounded-full text-[11px] font-bold text-violet-100/80 transition hover:bg-white/10 hover:text-white disabled:opacity-30"
+        className="flex h-7 w-7 items-center justify-center rounded-full text-[11px] font-bold text-white/92 transition hover:bg-white/10 hover:text-white disabled:opacity-30"
       >
         A−
       </button>
@@ -45,7 +45,7 @@ export default function TextSizeControl({
         disabled={scale >= MAX}
         aria-label={increaseLabel}
         title={increaseLabel}
-        className="flex h-7 w-7 items-center justify-center rounded-full text-[13px] font-bold text-violet-100/80 transition hover:bg-white/10 hover:text-white disabled:opacity-30"
+        className="flex h-7 w-7 items-center justify-center rounded-full text-[13px] font-bold text-white/92 transition hover:bg-white/10 hover:text-white disabled:opacity-30"
       >
         A+
       </button>

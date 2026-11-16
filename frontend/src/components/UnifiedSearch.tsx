@@ -63,7 +63,7 @@ export default function UnifiedSearch({ lang }: { lang: Lang }) {
         </span>
         {s.searchAll}
       </h2>
-      <div className="mb-3 flex items-center gap-2 rounded-xl border border-white/15 bg-white/10 px-2.5 py-2 focus-within:border-[#FACC15]/70">
+      <div className="mb-3 flex items-center gap-2 rounded-xl border border-white/35 bg-white/10 px-2.5 py-2 focus-within:border-[#FACC15]/70">
         <SearchIcon />
         <input
           type="search"
@@ -71,17 +71,17 @@ export default function UnifiedSearch({ lang }: { lang: Lang }) {
           onChange={(e) => setQuery(e.target.value)}
           placeholder={s.searchBible}
           aria-label={s.searchBible}
-          className="w-full min-w-0 bg-transparent text-xs text-white outline-none placeholder:text-violet-100/45"
+          className="w-full min-w-0 bg-transparent text-xs text-white outline-none placeholder:text-white/82"
         />
       </div>
 
       {normalized.length < 2 ? (
-        <p className="py-4 text-center text-xs text-violet-100/60">{s.noResults}</p>
+        <p className="py-4 text-center text-xs font-medium text-white/92">{s.noResults}</p>
       ) : (
         <div className="space-y-3">
           {verses.length > 0 && (
             <div>
-              <p className="mb-1.5 text-[10px] font-bold tracking-[0.18em] text-[#FACC15]/80 uppercase">{s.verses}</p>
+              <p className="mb-1.5 text-[10px] font-bold tracking-[0.18em] text-[#FACC15] uppercase">{s.verses}</p>
               <ul className="space-y-1.5">
                 {verses.map((v) => (
                   <li key={`${v.bookId}-${v.chapter}-${v.verse}`}>
@@ -89,7 +89,7 @@ export default function UnifiedSearch({ lang }: { lang: Lang }) {
                       <span className="block text-[10px] font-bold text-[#FACC15]">
                         {bookName(v.bookId, lang)} {v.chapter}:{v.verse}
                       </span>
-                      <span className="mt-0.5 line-clamp-2 block text-[11px] leading-snug text-violet-50">{v.text}</span>
+                      <span className="mt-0.5 line-clamp-2 block text-[11px] leading-snug text-white">{v.text}</span>
                     </div>
                   </li>
                 ))}
@@ -98,7 +98,7 @@ export default function UnifiedSearch({ lang }: { lang: Lang }) {
           )}
           {hymns.length > 0 && (
             <div>
-              <p className="mb-1.5 text-[10px] font-bold tracking-[0.18em] text-[#F43F5E]/80 uppercase">{s.hymnal}</p>
+              <p className="mb-1.5 text-[10px] font-bold tracking-[0.18em] text-[#F43F5E] uppercase">{s.hymnal}</p>
               <ul className="space-y-1.5">
                 {hymns.map((h) => (
                   <li key={`${h.lang}-${h.edition ?? 'common'}-${h.collection}-${h.number}-${h.title}`}>
@@ -107,7 +107,7 @@ export default function UnifiedSearch({ lang }: { lang: Lang }) {
                         {s.hymnNumber} {h.number} · {h.title}
                         {h.bookName ? ` · ${h.bookName}` : ''}
                       </span>
-                      <span className="mt-0.5 line-clamp-2 block text-[11px] leading-snug text-violet-50">
+                      <span className="mt-0.5 line-clamp-2 block text-[11px] leading-snug text-white">
                         {h.lyrics.split('\n')[0]}
                       </span>
                     </div>
@@ -117,7 +117,7 @@ export default function UnifiedSearch({ lang }: { lang: Lang }) {
             </div>
           )}
           {verses.length === 0 && hymns.length === 0 && (
-            <p className="py-4 text-center text-xs text-violet-100/60">{s.noResults}</p>
+            <p className="py-4 text-center text-xs font-medium text-white/92">{s.noResults}</p>
           )}
         </div>
       )}
