@@ -301,7 +301,7 @@ export default function BibleExplorer({ lang }: { lang: Lang }) {
                   key={`${verse.chapter}-${verse.verse}`}
                   className={
                     compareOn
-                      ? 'rounded-xl border border-white/10 bg-white/[0.04] px-2.5 py-2'
+                      ? 'rounded-xl border border-white/16 bg-white/[0.08] px-2.5 py-2 backdrop-blur-[14px]'
                       : 'group flex items-start gap-1.5 rounded-xl px-2 py-1.5 transition hover:bg-white/5'
                   }
                 >
@@ -435,7 +435,7 @@ export default function BibleExplorer({ lang }: { lang: Lang }) {
   return (
     <section
       aria-labelledby="bible-panel-title"
-      className="flex flex-col rounded-3xl border border-white/15 bg-white/[0.07] p-3 shadow-xl backdrop-blur-md sm:p-4"
+      className="flex flex-col rounded-3xl border border-white/16 bg-white/[0.08] p-3 shadow-xl backdrop-blur-[14px] sm:p-4"
     >
       <header className="mb-3 flex flex-wrap items-center justify-between gap-2">
         <h2 id="bible-panel-title" className="flex min-w-0 items-center gap-2">

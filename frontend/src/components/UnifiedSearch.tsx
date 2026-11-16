@@ -56,7 +56,7 @@ export default function UnifiedSearch({ lang }: { lang: Lang }) {
   }, [normalized, lang, tradition, dataEdition]);
 
   return (
-    <section className="mt-4 rounded-3xl border border-white/15 bg-white/[0.07] p-3 shadow-xl backdrop-blur-md sm:p-4">
+    <section className="mt-4 rounded-3xl border border-white/16 bg-white/[0.08] p-3 shadow-xl backdrop-blur-[14px] sm:p-4">
       <h2 className="mb-2 flex items-center gap-2 text-sm font-black tracking-wide text-white uppercase">
         <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-gradient-to-br from-[#F43F5E] to-[#9F1239] text-white">
           <SearchIcon />
