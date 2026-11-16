@@ -195,3 +195,13 @@ html:not(.dark) .support-tuza {
 }
 
 html:not(.dark) .tuza-card-title { color: #0369A1 !important; }
+
+html:not(.dark) .tuza-footer-brand {
+  color: #0369A1 !important;
+  font-weight: 700 !important;
+  border: 1px solid rgba(2, 132, 199, 0.12);
+  border-radius: 9999px;
+  padding: 0.2rem 0.75rem;
+  background: rgba(2, 132, 199, 0.06);
+  text-shadow: none !important;
+}
