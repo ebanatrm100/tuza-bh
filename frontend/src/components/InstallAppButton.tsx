@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { t, type Lang } from '../i18n';
 import Modal from './Modal';
+import { requestDailyNotificationPermission } from '../lib/notifications';
 
 type Platform = 'ios' | 'android' | 'windows' | 'linux' | 'other';
 
@@ -16,6 +17,7 @@ if (typeof window !== 'undefined') {
   });
   window.addEventListener('appinstalled', () => {
     capturedPrompt = null;
+    try { localStorage.setItem('tuza-installed', '1'); } catch {}
     promptSubscribers.forEach((cb) => cb(null));
   });
 }
@@ -90,6 +92,8 @@ export default function InstallAppButton({ lang }: { lang: Lang }) {
     const onInstalled = () => {
       setInstalled(true);
       setDeferredPrompt(null);
+      localStorage.setItem('tuza-installed', '1');
+      void requestDailyNotificationPermission();
     };
     const onDisplayChange = () => {
       if (isStandaloneMode()) setInstalled(true);
@@ -108,6 +112,7 @@ export default function InstallAppButton({ lang }: { lang: Lang }) {
 
   const handleClick = async () => {
     if (installed) return;
+    void requestDailyNotificationPermission();
     if (deferredPrompt) {
       try {
         deferredPrompt.prompt();

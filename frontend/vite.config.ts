@@ -42,7 +42,8 @@ export default defineConfig({
         navigateFallbackDenylist: [/^\/api\//],
         cleanupOutdatedCaches: true,
         clientsClaim: true,
-        skipWaiting: true
+        skipWaiting: true,
+        importScripts: ['/sw-notifications.js']
       }
     })
   ],

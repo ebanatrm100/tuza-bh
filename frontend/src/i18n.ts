@@ -95,6 +95,8 @@ const rw = {
   shareFailed: 'Ntibyakunze gukora ishusho. Ongera ugerageze.',
   compareLanguage: 'Gereranya ururimi',
   compareWith: 'Gereranya na',
+  dailyRemindersBanner: "Shyiraho imenyesha buri munsi saa 6:40 AM na 9:50 PM",
+  enableDailyReminders: "Shyiraho imenyesha buri munsi",
   installApp: 'Kuramo App',
   installedOffline: 'Yashyizweho (nta murandasi)'
 };
@@ -187,6 +189,8 @@ const en: Strings = {
   shareFailed: 'Could not create the image. Please try again.',
   compareLanguage: 'Compare language',
   compareWith: 'Compare with',
+  dailyRemindersBanner: "Enable daily 6:40 AM & 9:50 PM Bible reminders",
+  enableDailyReminders: "Enable daily reminders",
   installApp: 'Download App',
   installedOffline: 'Installed Offline'
 };
@@ -277,6 +281,8 @@ const sw: Strings = {
   shareFailed: 'Imeshindwa kuunda picha. Tafadhali jaribu tena.',
   compareLanguage: 'Linganisha lugha',
   compareWith: 'Linganisha na',
+  dailyRemindersBanner: "Washa ukumbusho wa kila siku saa 6:40 AM na 9:50 PM",
+  enableDailyReminders: "Washa ukumbusho wa kila siku",
   installApp: 'Pakua App',
   installedOffline: 'Imesakinishwa (bila mtandao)'
 };
@@ -367,6 +373,8 @@ const fr: Strings = {
   shareFailed: "Impossible de créer l'image. Veuillez réessayer.",
   compareLanguage: 'Comparer la langue',
   compareWith: 'Comparer avec',
+  dailyRemindersBanner: "Activer les rappels bibliques quotidiens à 6h40 et 21h50",
+  enableDailyReminders: "Activer les rappels quotidiens",
   installApp: "Télécharger l'App",
   installedOffline: 'Installée hors ligne'
 };

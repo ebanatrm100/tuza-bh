@@ -8,7 +8,8 @@ import Home from './pages/Home';
 import Bible from './pages/Bible';
 import Hymns from './pages/Hymns';
 import { seedOfflineData } from './db';
-import { type Lang } from './i18n';
+import { t, type Lang } from './i18n';
+import { initDailyNotifications, requestDailyNotificationPermission } from './lib/notifications';
 
 function BackgroundDecor() {
   return (
@@ -43,6 +44,14 @@ export default function App() {
     const saved = localStorage.getItem('tuza-lang');
     return saved === 'en' || saved === 'sw' || saved === 'fr' || saved === 'rw' ? saved : 'rw';
   });
+  const [notifPermission, setNotifPermission] = useState<NotificationPermission>(() =>
+    'Notification' in window ? Notification.permission : 'denied'
+  );
+  const [notifBannerDismissed, setNotifBannerDismissed] = useState<boolean>(
+    () => localStorage.getItem('tuza-notif-banner-dismissed') === '1'
+  );
+
+  const s = t(lang);
 
   useEffect(() => {
     localStorage.setItem('tuza-lang', lang);
@@ -51,16 +60,75 @@ export default function App() {
 
   useEffect(() => {
     seedOfflineData();
+    void initDailyNotifications().then(() => {
+      if ('Notification' in window) setNotifPermission(Notification.permission);
+    });
   }, []);
+
+  const isInstalledContext =
+    window.matchMedia('(display-mode: standalone)').matches ||
+    (navigator as any).standalone === true ||
+    localStorage.getItem('tuza-installed') === '1';
+
+  const handleEnableDailyReminders = async () => {
+    const granted = await requestDailyNotificationPermission();
+    if ('Notification' in window) setNotifPermission(Notification.permission);
+    if (granted) {
+      setNotifBannerDismissed(true);
+      localStorage.setItem('tuza-notif-banner-dismissed', '1');
+    }
+  };
+
+  const dismissNotifBanner = () => {
+    setNotifBannerDismissed(true);
+    localStorage.setItem('tuza-notif-banner-dismissed', '1');
+  };
 
   return (
     <BrowserRouter>
       <div className="tuza-bg flex min-h-screen flex-col">
         <BackgroundDecor />
 
+        {notifPermission === 'default' && !notifBannerDismissed && isInstalledContext && (
+          <div className="fixed top-3 left-1/2 z-50 w-[min(92vw,34rem)] -translate-x-1/2 rounded-2xl border border-[#FACC15]/40 bg-[#5B21B6]/95 px-4 py-3 text-white shadow-2xl backdrop-blur">
+            <div className="flex items-center gap-3">
+              <span className="text-sm font-semibold">{s.dailyRemindersBanner}</span>
+              <button
+                type="button"
+                onClick={handleEnableDailyReminders}
+                className="ml-auto rounded-full bg-[#FACC15] px-3 py-1 text-xs font-bold text-[#431888] transition-transform hover:scale-105"
+              >
+                {s.enableDailyReminders}
+              </button>
+              <button
+                type="button"
+                onClick={dismissNotifBanner}
+                aria-label={s.close}
+                className="text-lg leading-none text-white/80 hover:text-white"
+              >
+                ×
+              </button>
+            </div>
+          </div>
+        )}
+
         <header className="relative z-20 flex items-start justify-between gap-3 px-4 pt-4 md:px-8 md:pt-6">
           <SupportButton lang={lang} />
           <div className="flex items-center gap-2">
+            {notifPermission === 'default' && (
+              <button
+                type="button"
+                onClick={handleEnableDailyReminders}
+                className="lang-select rounded-full px-3 py-2 flex items-center gap-2 shadow-lg text-white font-semibold text-sm transition-transform hover:scale-105"
+                aria-label={s.enableDailyReminders}
+                title={s.enableDailyReminders}
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#FACC15" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9" />
+                  <path d="M13.73 21a2 2 0 0 1-3.46 0" />
+                </svg>
+              </button>
+            )}
             <InstallAppButton lang={lang} />
             <LanguageSelector lang={lang} onChange={setLang} />
           </div>

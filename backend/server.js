@@ -206,6 +206,9 @@ app.post('/api/webhooks/payment', async (req, res) => {
   }
 });
 
+const mountNotifications = require('./notifications');
+mountNotifications(app);
+
 app.use('/api', (req, res) => {
   res.status(404).json({ error: 'Not found' });
 });
