@@ -473,7 +473,7 @@ export default function BibleExplorer({ lang }: { lang: Lang }) {
         >
           <StarIcon size={15} filled={bookmarks.length > 0} />
           {bookmarks.length > 0 && (
-            <span className="absolute -top-1 -right-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-[#F43F5E] px-1 text-[9px] font-bold text-white">
+            <span className="absolute -top-1 -right-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-[#F43F5E] px-1 text-[9px] font-bold text-white keep-white">
               {bookmarks.length}
             </span>
           )}

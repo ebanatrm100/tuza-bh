@@ -13,6 +13,11 @@
     <title>TUZA BIBLE+HYMNAL</title>
   </head>
   <body>
+    <script>
+      (function () {
+        if (localStorage.getItem('tuza-theme') === 'dark') document.documentElement.classList.add('dark');
+      })();
+    </script>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
