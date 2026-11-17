@@ -9,7 +9,7 @@ import Bible from './pages/Bible';
 import Hymns from './pages/Hymns';
 import { seedOfflineData } from './db';
 import { t, type Lang } from './i18n';
-import { initDailyNotifications, requestDailyNotificationPermission } from './lib/notifications';
+import { initDailyNotifications, requestDailyNotificationPermission, sendTestNotification } from './lib/notifications';
 
 function BackgroundDecor() {
   return (
@@ -137,6 +137,15 @@ export default function App() {
                 </svg>
               </button>
             )}
+            <button
+              type="button"
+              onClick={() => { void sendTestNotification(); }}
+              className="lang-select rounded-full px-3 py-2 flex items-center gap-2 shadow-lg text-white font-semibold text-sm transition-transform hover:scale-105"
+              aria-label="Test Notification Now"
+              title="Test Notification Now"
+            >
+              Test Notification Now
+            </button>
             <InstallAppButton lang={lang} />
             <button
               type="button"

@@ -70,10 +70,23 @@ export async function subscribeToPush(): Promise<boolean> {
   try {
     const registration = await navigator.serviceWorker.ready;
     const publicKey = await getVapidPublicKey();
-    const subscription = await registration.pushManager.subscribe({
-      userVisibleOnly: true,
-      applicationServerKey: urlBase64ToUint8Array(publicKey) as unknown as BufferSource
-    });
+
+    let subscription = await registration.pushManager.getSubscription();
+    const storedKey = localStorage.getItem('tuza-vapid-public-key');
+    if (!subscription || storedKey !== publicKey) {
+      if (subscription) {
+        try {
+          await subscription.unsubscribe();
+        } catch {
+          // Ignore unsubscribe errors and attempt a fresh subscription.
+        }
+      }
+      subscription = await registration.pushManager.subscribe({
+        userVisibleOnly: true,
+        applicationServerKey: urlBase64ToUint8Array(publicKey) as unknown as BufferSource
+      });
+    }
+    localStorage.setItem('tuza-vapid-public-key', publicKey);
 
     const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone || 'Africa/Kigali';
     await setSetting('timezone', timezone);
@@ -82,7 +95,7 @@ export async function subscribeToPush(): Promise<boolean> {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        subscription,
+        subscription: subscription.toJSON(),
         timezone,
         updatedAt: new Date().toISOString()
       })
@@ -185,6 +198,28 @@ function startForegroundFallbackTimer(): void {
   checkForegroundReminder();
 }
 
+export async function sendTestNotification(): Promise<boolean> {
+  if (!('serviceWorker' in navigator) || !('Notification' in window)) return false;
+  if (Notification.permission !== 'granted') return false;
+
+  try {
+    await subscribeToPush();
+    const registration = await navigator.serviceWorker.ready;
+    const subscription = await registration.pushManager.getSubscription();
+    if (!subscription) return false;
+
+    const response = await fetch('/api/notifications/test', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ subscription: subscription.toJSON() })
+    });
+    return response.ok;
+  } catch (error) {
+    console.error('Test notification failed:', error);
+    return false;
+  }
+}
+
 export async function initDailyNotifications(): Promise<void> {
   if (!('Notification' in window)) return;
 
@@ -193,4 +228,13 @@ export async function initDailyNotifications(): Promise<void> {
   }
 
   await setupLocalFallback();
+
+  if ('serviceWorker' in navigator && !((window as any).__tuzaNotifVisibilityBound)) {
+    (window as any).__tuzaNotifVisibilityBound = true;
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'visible' && Notification.permission === 'granted') {
+        void subscribeToPush();
+      }
+    });
+  }
 }

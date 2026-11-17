@@ -113,21 +113,24 @@ self.addEventListener('push', (event) => {
     data = { title: MORNING_TITLE, body: event.data ? event.data.text() : '' };
   }
 
-  const title = data.title || MORNING_TITLE;
-  const options = {
-    body: data.body || '',
+  data.title = data.title || MORNING_TITLE;
+  data.body = data.body || '';
+  data.tag = data.tag || 'tuza-daily-reminder';
+
+  event.waitUntil(self.registration.showNotification(data.title, {
+    body: data.body,
     icon: '/icons/icon-192.png',
     badge: '/icons/icon-192.png',
-    tag: data.tag || 'tuza-daily-reminder',
-    data: { url: data.url || '/bible' }
-  };
-
-  event.waitUntil(self.registration.showNotification(title, options));
+    tag: data.tag,
+    renotify: true,
+    requireInteraction: true,
+    data: { url: '/' }
+  }));
 });
 
 self.addEventListener('notificationclick', (event) => {
   event.notification.close();
-  const targetUrl = (event.notification.data && event.notification.data.url) || '/bible';
+  const targetUrl = (event.notification.data && event.notification.data.url) || '/';
 
   event.waitUntil((async () => {
     const clients = await self.clients.matchAll({ type: 'window', includeUncontrolled: true });

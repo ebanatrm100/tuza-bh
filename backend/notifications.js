@@ -109,6 +109,14 @@ function localParts(date, timezone) {
   return { dateKey, hhmm };
 }
 
+function addMinute(time) {
+  const [h, m] = time.split(':').map(Number);
+  const total = h * 60 + m + 1;
+  const nh = Math.floor(total / 60) % 24;
+  const nm = total % 60;
+  return `${String(nh).padStart(2, '0')}:${String(nm).padStart(2, '0')}`;
+}
+
 let schedulerStarted = false;
 
 async function runSchedulerTick() {
@@ -130,7 +138,8 @@ async function runSchedulerTick() {
     nextSubscriptions.push(record);
 
     for (const target of TARGETS) {
-      if (hhmm !== target.time) continue;
+      const fallbackTime = addMinute(target.time);
+      if (hhmm !== target.time && hhmm !== fallbackTime) continue;
 
       const endpointLog = sendLog[endpoint] || {};
       if (endpointLog[target.key] === dateKey) continue;
@@ -173,7 +182,7 @@ function startScheduler() {
   runSchedulerTick().catch((err) => console.error('Notification scheduler tick failed:', err));
   setInterval(() => {
     runSchedulerTick().catch((err) => console.error('Notification scheduler tick failed:', err));
-  }, 30000);
+  }, 20000);
 }
 
 function mountNotifications(app) {
@@ -200,8 +209,45 @@ function mountNotifications(app) {
     res.json({ ok: true });
   });
 
+  app.get('/api/notifications/tick', async (req, res) => {
+    try {
+      await runSchedulerTick();
+      res.json({ ok: true });
+    } catch (err) {
+      console.error('Notification tick failed:', err);
+      res.status(500).json({ error: 'Notification tick failed' });
+    }
+  });
+
+  app.post('/api/notifications/test', async (req, res) => {
+    const subscription = req.body?.subscription;
+    if (!subscription || !subscription.endpoint) {
+      return res.status(400).json({ error: 'Invalid subscription' });
+    }
+    try {
+      await webpush.sendNotification(
+        subscription,
+        JSON.stringify({
+          title: 'TUZA BIBLE+HYMNAL',
+          body: 'This is a test notification.',
+          url: '/',
+          tag: 'tuza-test'
+        })
+      );
+      res.json({ ok: true });
+    } catch (err) {
+      if (err?.statusCode === 410 || err?.statusCode === 404) {
+        return res.status(410).json({ error: 'Subscription expired' });
+      }
+      console.error('Web Push test send failed:', err?.statusCode || err?.message);
+      res.status(500).json({ error: 'Web Push send failed' });
+    }
+  });
+
   startScheduler();
   return app;
 }
 
 module.exports = mountNotifications;
+module.exports.mountNotifications = mountNotifications;
+module.exports.runSchedulerTick = runSchedulerTick;

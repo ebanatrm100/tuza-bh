@@ -35,6 +35,10 @@ function readLibrary() {
 
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', name: 'TUZA BIBLE+HYMNAL' });
+  const tick = require('./notifications').runSchedulerTick;
+  if (typeof tick === 'function') {
+    tick().catch((err) => console.error('Notification scheduler tick failed:', err));
+  }
 });
 
 // Full offline library. The PWA normally reads /data/library.json, which is
