@@ -35,7 +35,6 @@ export default function BibleExplorer({ lang }: { lang: Lang }) {
   const [book, setBook] = useState<BibleBook | null>(null);
   const [chapter, setChapter] = useState<number | null>(null);
   const [chapterVerses, setChapterVerses] = useState<BibleVerse[]>([]);
-  const [englishFallback, setEnglishFallback] = useState(false);
   const [query, setQuery] = useState('');
   const [verseHits, setVerseHits] = useState<BibleVerse[]>([]);
   const [bookmarksOpen, setBookmarksOpen] = useState(false);
@@ -63,13 +62,11 @@ export default function BibleExplorer({ lang }: { lang: Lang }) {
   useEffect(() => {
     if (!activeBook || chapter === null) {
       setChapterVerses([]);
-      setEnglishFallback(false);
       return;
     }
     void (async () => {
       const result = await getBibleChapterVerses(lang, activeBook.id, chapter);
       setChapterVerses(result.verses);
-      setEnglishFallback(result.fallback);
     })();
   }, [activeBook, chapter, lang]);
 
@@ -278,11 +275,6 @@ export default function BibleExplorer({ lang }: { lang: Lang }) {
           {bookName(activeBook.id, lang)} <span className="font-medium text-white/92">· {s.chapter} {chapter}</span>
           {savedVerses > 0 && <span className="ml-2 text-[10px] font-semibold text-[#FACC15]">★ {savedVerses}</span>}
         </h3>
-        {englishFallback && (
-          <div className="mb-2 rounded-xl border border-[#FACC15]/30 bg-[#FACC15]/10 px-3 py-2 text-[11px] font-medium text-[#FACC15]">
-            {s.deuterocanonFallback}
-          </div>
-        )}
         {chapterVerses.length === 0 ? (
           <div className="rounded-xl border border-dashed border-white/15 px-3 py-6 text-center text-xs font-medium text-white/92">
             <p>{s.noVerses}</p>
@@ -351,7 +343,7 @@ export default function BibleExplorer({ lang }: { lang: Lang }) {
                         style={{ fontSize: `${0.9 * fontScale}rem`, lineHeight: 1.7 }}
                       >
                         <span className="mr-1.5 text-[0.65em] font-bold tracking-wide text-[#FACC15] uppercase">
-                          {LANG_LABELS[compareLang]}
+                          {LANG_LABELS[compareLang]}:
                         </span>
                         {parallel ?? '—'}
                       </p>
