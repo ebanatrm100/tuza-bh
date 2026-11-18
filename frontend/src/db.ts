@@ -158,6 +158,19 @@ class TuzaDB extends Dexie {
       await tx.table('hymns').clear();
       await tx.table('meta').clear();
     });
+    this.version(9).stores({
+      bibleBooks: 'id, name, englishName, testament',
+      bibleVerses: '++id, lang, bookId, chapter, [lang+bookId+chapter]',
+      hymns: '++id, lang, number, [lang+number]',
+      meta: 'key'
+    }).upgrade(async (tx) => {
+      // Kinyarwanda Sirach (Mwene Siraki) re-translated and version bumped,
+      // so installed PWAs must reseed to pick up the updated rw bundle.
+      await tx.table('bibleBooks').clear();
+      await tx.table('bibleVerses').clear();
+      await tx.table('hymns').clear();
+      await tx.table('meta').clear();
+    });
   }
 }
 
