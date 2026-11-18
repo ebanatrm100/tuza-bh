@@ -1,5 +1,5 @@
 import Dexie, { type Table } from 'dexie';
-import { BOOKS } from './data/books';
+import { BOOKS, isDeuterocanonical } from './data/books';
 import type { Lang } from './i18n';
 
 export interface BibleBook {
@@ -114,6 +114,19 @@ class TuzaDB extends Dexie {
     }).upgrade(async (tx) => {
       // A new canon, new edition metadata, and bumped JSON versions must all
       // reseed installed PWAs instead of trusting the old seededAt marker.
+      await tx.table('bibleBooks').clear();
+      await tx.table('bibleVerses').clear();
+      await tx.table('hymns').clear();
+      await tx.table('meta').clear();
+    });
+    this.version(6).stores({
+      bibleBooks: 'id, name, englishName, testament',
+      bibleVerses: '++id, lang, bookId, chapter, [lang+bookId+chapter]',
+      hymns: '++id, lang, number, [lang+number]',
+      meta: 'key'
+    }).upgrade(async (tx) => {
+      // Bumped JSON versions and Deuterocanonical English fallback require a
+      // full reseed of installed PWAs.
       await tx.table('bibleBooks').clear();
       await tx.table('bibleVerses').clear();
       await tx.table('hymns').clear();
@@ -295,6 +308,34 @@ export function seedOfflineData(): Promise<void> {
     })();
   }
   return seedPromise;
+}
+
+export async function getBibleChapterVerses(
+  lang: Lang,
+  bookId: number,
+  chapter: number
+): Promise<{ verses: BibleVerse[]; fallback: boolean }> {
+  const rows = await db.bibleVerses
+    .where('[lang+bookId+chapter]')
+    .equals([lang, bookId, chapter])
+    .sortBy('verse');
+  if (rows.length > 0) return { verses: rows, fallback: false };
+
+  // Automatic English fallback for Deuterocanonical books that are not yet
+  // available in the requested (non-English) language.
+  if (lang !== 'en' && isDeuterocanonical(bookId)) {
+    const englishRows = await db.bibleVerses
+      .where('[lang+bookId+chapter]')
+      .equals(['en', bookId, chapter])
+      .sortBy('verse');
+    if (englishRows.length > 0) {
+      return {
+        verses: englishRows.map((row) => ({ ...row, lang })),
+        fallback: true
+      };
+    }
+  }
+  return { verses: rows, fallback: false };
 }
 
 export async function searchBible(lang: Lang, query: string, limit = 24): Promise<BibleVerse[]> {
