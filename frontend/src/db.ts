@@ -1,5 +1,5 @@
 import Dexie, { type Table } from 'dexie';
-import { BOOKS, isDeuterocanonical } from './data/books';
+import { BOOKS, isDeuterocanonical, DEUTEROCANONICAL_ENGLISH_BOOK_IDS } from './data/books';
 import type { Lang } from './i18n';
 
 export interface BibleBook {
@@ -127,6 +127,19 @@ class TuzaDB extends Dexie {
     }).upgrade(async (tx) => {
       // Bumped JSON versions and Deuterocanonical English fallback require a
       // full reseed of installed PWAs.
+      await tx.table('bibleBooks').clear();
+      await tx.table('bibleVerses').clear();
+      await tx.table('hymns').clear();
+      await tx.table('meta').clear();
+    });
+    this.version(7).stores({
+      bibleBooks: 'id, name, englishName, testament',
+      bibleVerses: '++id, lang, bookId, chapter, [lang+bookId+chapter]',
+      hymns: '++id, lang, number, [lang+number]',
+      meta: 'key'
+    }).upgrade(async (tx) => {
+      // Force a complete reseed so every language gets the current canon and
+      // English Deuterocanonical rows are guaranteed to exist for fallback.
       await tx.table('bibleBooks').clear();
       await tx.table('bibleVerses').clear();
       await tx.table('hymns').clear();
@@ -322,11 +335,14 @@ export async function getBibleChapterVerses(
   if (rows.length > 0) return { verses: rows, fallback: false };
 
   // Automatic English fallback for Deuterocanonical books that are not yet
-  // available in the requested (non-English) language.
+  // available in the requested (non-English) language. Resolve the English
+  // book through the canonical Deuterocanonical id map instead of relying on
+  // name-string matching.
   if (lang !== 'en' && isDeuterocanonical(bookId)) {
+    const englishBookId = DEUTEROCANONICAL_ENGLISH_BOOK_IDS[bookId] ?? bookId;
     const englishRows = await db.bibleVerses
       .where('[lang+bookId+chapter]')
-      .equals(['en', bookId, chapter])
+      .equals(['en', englishBookId, chapter])
       .sortBy('verse');
     if (englishRows.length > 0) {
       return {

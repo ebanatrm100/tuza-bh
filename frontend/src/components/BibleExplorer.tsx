@@ -66,16 +66,11 @@ export default function BibleExplorer({ lang }: { lang: Lang }) {
       setEnglishFallback(false);
       return;
     }
-    let alive = true;
     void (async () => {
       const result = await getBibleChapterVerses(lang, activeBook.id, chapter);
-      if (!alive) return;
       setChapterVerses(result.verses);
       setEnglishFallback(result.fallback);
     })();
-    return () => {
-      alive = false;
-    };
   }, [activeBook, chapter, lang]);
 
   const compareKey = activeBook && chapter !== null ? `${compareLang}:${activeBook.id}:${chapter}` : '';

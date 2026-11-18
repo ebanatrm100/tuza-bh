@@ -94,6 +94,19 @@ const BOOK_BY_ID = new Map(BOOKS.map((book, index) => [index + 1, book]));
 
 const DEUTEROCANONICAL_IDS = new Set([67, 68, 69, 70, 71, 72, 73]);
 
+// Canonical Deuterocanonical book ids are stable across every language: the
+// same numeric id is used in rw/sw/fr/en, so an English fallback can always be
+// resolved from the selected book's id without name-string matching.
+export const DEUTEROCANONICAL_ENGLISH_BOOK_IDS: Record<number, number> = {
+  67: 67, // Tobit / Tobi / Tobiti / Tobie
+  68: 68, // Judith / Yudita
+  69: 69, // Wisdom / Ubuhanga / Hekima / Sagesse
+  70: 70, // Sirach / Mwene Siraki / Sira / Siracide
+  71: 71, // Baruch / Baruki / Baruku / Baruch
+  72: 72, // 1 Maccabees / Icya mbere cy'Abamakabe / Wamakabayo 1 / 1 Maccabées
+  73: 73 // 2 Maccabees / Icya kabiri cy'Abamakabe / Wamakabayo 2 / 2 Maccabées
+};
+
 // Catholic order places the Deuterocanonical books among the historical,
 // wisdom, and prophetic books instead of appending them after Malachi.
 export const CATHOLIC_ORDER = [
