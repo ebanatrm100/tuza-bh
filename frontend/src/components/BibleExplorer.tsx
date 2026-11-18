@@ -75,12 +75,9 @@ export default function BibleExplorer({ lang }: { lang: Lang }) {
   useEffect(() => {
     if (!compareOn || !activeBook || chapter === null) return;
     let alive = true;
-    db.bibleVerses
-      .where('[lang+bookId+chapter]')
-      .equals([compareLang, activeBook.id, chapter])
-      .sortBy('verse')
-      .then((rows) => {
-        if (alive) setCompareData({ key: `${compareLang}:${activeBook.id}:${chapter}`, rows });
+    getBibleChapterVerses(compareLang, activeBook.id, chapter)
+      .then((result) => {
+        if (alive) setCompareData({ key: `${compareLang}:${activeBook.id}:${chapter}`, rows: result.verses });
       });
     return () => {
       alive = false;
@@ -278,11 +275,6 @@ export default function BibleExplorer({ lang }: { lang: Lang }) {
         {chapterVerses.length === 0 ? (
           <div className="rounded-xl border border-dashed border-white/15 px-3 py-6 text-center text-xs font-medium text-white/92">
             <p>{s.noVerses}</p>
-            {isDeuterocanonical(activeBook.id) && (
-              <p className="mt-1.5 text-[10px] leading-relaxed text-[#FACC15]">
-                {s.deuterocanonUnavailable}
-              </p>
-            )}
           </div>
         ) : (
           <div className={compareOn ? 'space-y-2' : 'space-y-1'}>
